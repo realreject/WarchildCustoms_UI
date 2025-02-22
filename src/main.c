@@ -1,6 +1,5 @@
 #include "include.h"
 
-
 // ESP error logging tag
 static const char *TAG = "WARCHILD CUSTOMS";
 
@@ -22,19 +21,10 @@ void ESP_NOW_START();
 void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
 void onDataRecv(const esp_now_recv_info_t *recv_info, const uint8_t *data, int data_len);
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
+void nvs_init();
+void wifi_init();
 
 uint8_t clientAddress[] = {0x0c, 0xb8, 0x15, 0xd8, 0x2f, 0xc8};
-
-/**
- * @brief LVGL porting example
- * Set the rotation degree:
- *      - 0: 0 degree
- *      - 90: 90 degree
- *      - 180: 180 degree
- *      - 270: 270 degree
- *
- */
-#define LVGL_PORT_ROTATION_DEGREE (90)
 
 void setup();
 
@@ -46,102 +36,31 @@ void app_main()
 #endif
 
 void setup()
-{
-      // Initialize NVS
-      esp_err_t ret = nvs_flash_init();
-      if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND)
-      {
-            ESP_ERROR_CHECK(nvs_flash_erase());
-            ret = nvs_flash_init();
-      }
-      ESP_ERROR_CHECK(ret);
+{      
+      nvs_init();
+      wifi_init();
+      initialize_system();
 
-      // Initialize WiFi
-      ESP_ERROR_CHECK(esp_netif_init());
-      ESP_ERROR_CHECK(esp_event_loop_create_default());
-      esp_netif_create_default_wifi_sta();
-
-      wifi_init_config_t wifi_cfg = WIFI_INIT_CONFIG_DEFAULT();
-      ESP_ERROR_CHECK(esp_wifi_init(&wifi_cfg));
-
-      ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL));
-      ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, NULL));
-
-      wifi_config_t wifi_config = {
-          .sta = {
-              .ssid = WIFI_SSID,
-              .password = WIFI_PASS,
-              .threshold.authmode = WIFI_AUTH_WPA2_PSK,
-          },
-      };
-
-      ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
-      ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
-      ESP_ERROR_CHECK(esp_wifi_start());
-
-      // Initialize the rest of the system
-      esp_chip_info_t chip_info;
-      uint32_t flash_size;
-      esp_chip_info(&chip_info);
-      ESP_LOGI(TAG, "This is %s chip with %d CPU core(s), %s%s%s%s, ",
-               CONFIG_IDF_TARGET,
-               chip_info.cores,
-               (chip_info.features & CHIP_FEATURE_WIFI_BGN) ? "WiFi/" : "",
-               (chip_info.features & CHIP_FEATURE_BT) ? "BT" : "",
-               (chip_info.features & CHIP_FEATURE_BLE) ? "BLE" : "",
-               (chip_info.features & CHIP_FEATURE_IEEE802154) ? ", 802.15.4 (Zigbee/Thread)" : "");
-
-      unsigned major_rev = chip_info.revision / 100;
-      unsigned minor_rev = chip_info.revision % 100;
-      ESP_LOGI(TAG, "silicon revision v%d.%d, ", major_rev, minor_rev);
-      if (esp_flash_get_size(NULL, &flash_size) != ESP_OK)
-      {
-            ESP_LOGI(TAG, "Get flash size failed");
-            return;
-      }
-
-      ESP_LOGI(TAG, "%" PRIu32 "MB %s flash", flash_size / (uint32_t)(1024 * 1024),
-               (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
-
-      ESP_LOGI(TAG, "Minimum free heap size: %" PRIu32 " bytes", esp_get_minimum_free_heap_size());
-      size_t freePsram = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
-      ESP_LOGI(TAG, "Free PSRAM: %d bytes", freePsram);
-      bsp_display_cfg_t cfg = {
-          .lvgl_port_cfg = ESP_LVGL_PORT_INIT_CONFIG(),
-          .buffer_size = EXAMPLE_LCD_QSPI_H_RES * EXAMPLE_LCD_QSPI_V_RES,
-#if LVGL_PORT_ROTATION_DEGREE == 90
-          .rotate = LV_DISP_ROT_90,
-#elif LVGL_PORT_ROTATION_DEGREE == 270
-          .rotate = LV_DISP_ROT_270,
-#elif LVGL_PORT_ROTATION_DEGREE == 180
-          .rotate = LV_DISP_ROT_180,
-#elif LVGL_PORT_ROTATION_DEGREE == 0
-          .rotate = LV_DISP_ROT_NONE,
-#endif
-      };
-
-      bsp_display_start_with_config(&cfg);
-      bsp_display_backlight_on();
-
-      /* Lock the mutex due to the LVGL APIs are not thread-safe */
-      bsp_display_lock(0);
-
+      //create screen 1
       screen1 = lv_obj_create(NULL);
       lv_obj_t *bg_img1 = lv_img_create(screen1);
       lv_img_set_src(bg_img1, &viking_bg_480_320);
       lv_obj_align(bg_img1, LV_ALIGN_CENTER, 0, 0);
 
+      //create label for screen 1
       lv_obj_t *label1 = lv_label_create(screen1);
       lv_label_set_text(label1, "MAIN UI SCREEN");
       lv_obj_set_style_text_color(label1, lv_color_white(), 0);      // Set text color to white
       lv_obj_set_style_text_font(label1, &lv_font_montserrat_28, 0); // Set font size to larger font
       lv_obj_align(label1, LV_ALIGN_CENTER, 0, -50);
 
+      //create screen 2
       screen2 = lv_obj_create(NULL);
       lv_obj_t *bg_img2 = lv_img_create(screen2);
       lv_img_set_src(bg_img2, &viking_bg_480_320);
       lv_obj_align(bg_img2, LV_ALIGN_CENTER, 0, 0);
 
+      //create label for screen 2
       lv_obj_t *label2 = lv_label_create(screen2);
       lv_label_set_text(label2, "COLOR PICKER SCREEN");
       lv_obj_set_style_text_color(label2, lv_color_white(), 0);      // Set text color to white
@@ -310,6 +229,44 @@ void onDataRecv(const esp_now_recv_info_t *recv_info, const uint8_t *data, int d
       ESP_LOGI(TAG, "Data received from MAC: %02X:%02X:%02X:%02X:%02X:%02X, data length: %d",
                recv_info->src_addr[0], recv_info->src_addr[1], recv_info->src_addr[2],
                recv_info->src_addr[3], recv_info->src_addr[4], recv_info->src_addr[5], data_len);
+}
+
+void nvs_init()
+{
+      // Initialize NVS
+      esp_err_t err = nvs_flash_init();
+      if (err == ESP_ERR_NVS_NO_FREE_PAGES || err == ESP_ERR_NVS_NEW_VERSION_FOUND)
+      {
+            ESP_ERROR_CHECK(nvs_flash_erase());
+            err = nvs_flash_init();
+      }
+      ESP_ERROR_CHECK(err);
+}
+
+void wifi_init()
+{
+      // Initialize WiFi
+      ESP_ERROR_CHECK(esp_netif_init());
+      ESP_ERROR_CHECK(esp_event_loop_create_default());
+      esp_netif_create_default_wifi_sta();
+
+      wifi_init_config_t wifi_cfg = WIFI_INIT_CONFIG_DEFAULT();
+      ESP_ERROR_CHECK(esp_wifi_init(&wifi_cfg));
+
+      ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL));
+      ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, NULL));
+
+      wifi_config_t wifi_config = {
+          .sta = {
+              .ssid = WIFI_SSID,
+              .password = WIFI_PASS,
+              .threshold.authmode = WIFI_AUTH_WPA2_PSK,
+          },
+      };
+
+      ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+      ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
+      ESP_ERROR_CHECK(esp_wifi_start());
 }
 
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
