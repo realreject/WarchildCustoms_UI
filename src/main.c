@@ -23,44 +23,37 @@ void onDataRecv(const esp_now_recv_info_t *recv_info, const uint8_t *data, int d
 static void wifi_event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data);
 void nvs_init();
 void wifi_init();
+void lvgl_task(void *pvParameter);
 
 uint8_t clientAddress[] = {0x0c, 0xb8, 0x15, 0xd8, 0x2f, 0xc8};
 
-void setup();
-
-#if !CONFIG_AUTOSTART_ARDUINO
+// Main function
 void app_main()
 {
-      setup();
-}
-#endif
-
-void setup()
-{      
       nvs_init();
       wifi_init();
       initialize_system();
 
-      //create screen 1
+      // create screen 1
       screen1 = lv_obj_create(NULL);
       lv_obj_t *bg_img1 = lv_img_create(screen1);
       lv_img_set_src(bg_img1, &viking_bg_480_320);
       lv_obj_align(bg_img1, LV_ALIGN_CENTER, 0, 0);
 
-      //create label for screen 1
+      // create label for screen 1
       lv_obj_t *label1 = lv_label_create(screen1);
       lv_label_set_text(label1, "MAIN UI SCREEN");
       lv_obj_set_style_text_color(label1, lv_color_white(), 0);      // Set text color to white
       lv_obj_set_style_text_font(label1, &lv_font_montserrat_28, 0); // Set font size to larger font
       lv_obj_align(label1, LV_ALIGN_CENTER, 0, -50);
 
-      //create screen 2
+      // create screen 2
       screen2 = lv_obj_create(NULL);
       lv_obj_t *bg_img2 = lv_img_create(screen2);
       lv_img_set_src(bg_img2, &viking_bg_480_320);
       lv_obj_align(bg_img2, LV_ALIGN_CENTER, 0, 0);
 
-      //create label for screen 2
+      // create label for screen 2
       lv_obj_t *label2 = lv_label_create(screen2);
       lv_label_set_text(label2, "COLOR PICKER SCREEN");
       lv_obj_set_style_text_color(label2, lv_color_white(), 0);      // Set text color to white
@@ -101,14 +94,20 @@ void setup()
       bsp_display_unlock();
 
       ESP_NOW_START();
+
+      // Create LVGL task
+      xTaskCreate(lvgl_task, "lvgl_task", 4096, NULL, 5, NULL);
 }
 
-void loop()
-{
 
-      lv_timer_handler();           // Handle LVGL tasks
-      lv_tick_inc(5);               // Increment LVGL tick count
-      vTaskDelay(pdMS_TO_TICKS(5)); // Use FreeRTOS delay instead of delay(5)
+void lvgl_task(void *pvParameter)
+{
+    while (1)
+    {
+        lv_timer_handler();
+        lv_tick_inc(5);
+        vTaskDelay(pdMS_TO_TICKS(5));
+    }
 }
 
 void swipe_event_handler(lv_event_t *e)
