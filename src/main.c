@@ -38,10 +38,10 @@ int load_brightness();
 void save_brightness(int brightness);
 
 // Define default values for glow data
-int glow_red = 255;            // Default red value
-int glow_green = 255;          // Default green value
-int glow_blue = 255;           // Default blue value
-int glow_power = 0;            // Default power state
+int glow_red = 255;       // Default red value
+int glow_green = 255;     // Default green value
+int glow_blue = 255;      // Default blue value
+int glow_power = 0;       // Default power state
 int glow_brightness = 20; // Default brightness value
 
 // Timestamp variables for debounce
@@ -116,9 +116,6 @@ void app_main()
       lv_obj_add_flag(power_btn, LV_OBJ_FLAG_CLICKABLE);
       lv_obj_add_event_cb(power_btn, power_btn_event_handler, LV_EVENT_ALL, NULL);
 
-      // Use selected color for the power button when "on"
-      // lv_color_t selected_color = lv_color_make(glow_red, glow_green, glow_blue);
-
       // Apply any necessary styles to the symbol (if desired)
       if (power_status)
       {
@@ -181,7 +178,7 @@ static void power_btn_event_handler(lv_event_t *e)
             power_status = !power_status;
 
             // Use selected color for the power button when "on"
-            lv_color_t selected_color = lv_colorwheel_get_rgb(color_wheel);
+            // lv_color_t selected_color = lv_colorwheel_get_rgb(color_wheel);
 
             if (power_status)
             {
@@ -311,6 +308,9 @@ void create_color_wheel(lv_obj_t *parent)
       // Adjust the line width to make the arc/circle wider
       lv_obj_set_style_arc_width(color_wheel, 20, 0); // Set the arc width to 20 (adjust as needed)
 
+      // Set the initial color of the knob to the saved color
+      lv_obj_set_style_bg_color(color_wheel, selected_color, LV_PART_KNOB);
+
       // Add an event callback to handle color changes
       lv_obj_add_event_cb(color_wheel, color_wheel_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
 }
@@ -343,6 +343,13 @@ void color_wheel_event_cb(lv_event_t *e)
 
             // Call the send_esp_data function to update the LED colors
             save_color_status(selected_color); //     Save the color status
+
+            // Ensure that the LED state is correctly maintained
+            glow_power = power_status ? 1 : 0;
+
+            // Debugging log to verify the LED state
+            ESP_LOGI("Color Wheel", "LED state: power_status=%d, glow_power=%d", power_status, glow_power);
+
             send_esp_data();
       }
 }
