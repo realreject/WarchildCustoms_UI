@@ -12,16 +12,24 @@
 #include <esp_chip_info.h>
 #include <esp_system.h>
 #include <esp_heap_caps.h>
-#include "viking_bg_480_320.h" 
 #include <nvs_flash.h>
 #include <nvs.h>
 #include "esp_wifi.h"
 #include "esp_now.h"
 #include "config.h"
-#include "system_init.h"
+#include "stdint.h"
 #include "esp_now_manager.h"
 #include "esp_timer.h" 
 
+//warchild files
+#include "common_ui.h"
+#include "event_handler.h"
+#include "globals.h"
+#include "utils.h"
+#include "system_init.h"
+#include "screen1.h"
+#include "screen2.h"  
+#include "viking_bg_480_320.h" 
 
 
 #endif // INCLUDE_H
