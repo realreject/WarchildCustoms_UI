@@ -29,6 +29,7 @@
 #include "system_init.h"
 #include "screen1.h"
 #include "screen2.h"  
+#include "screen3.h"
 #include "viking_bg_480_320.h" 
 
 

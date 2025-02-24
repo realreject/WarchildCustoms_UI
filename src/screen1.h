@@ -6,5 +6,6 @@
 
 void create_screen1();
 void create_bulb_button(lv_obj_t *parent);
+void create_meter_button(lv_obj_t *parent);
 
 #endif // SCREEN1_H

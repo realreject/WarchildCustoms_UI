@@ -2,11 +2,15 @@
 #include "globals.h"
 
 // ESP error logging tag
-//static const char *TAG = "main.c";
+// static const char *TAG = "main.c";
+
+lv_obj_t *fps_label_screen1 = NULL;
+lv_obj_t *fps_label_screen2 = NULL;
+lv_obj_t *fps_label_screen3 = NULL;
 
 // Function prototypes
 void lvgl_task(void *pvParameter);
-// void send_esp_data();
+
 
 // Main function
 void app_main()
@@ -30,9 +34,14 @@ void app_main()
 
       create_screen1();
       create_screen2();
+      create_screen3();  
+
+      setup_and_update_fps(screen1, &fps_label_screen1);
+      setup_and_update_fps(screen2, &fps_label_screen2);
+      setup_and_update_fps(screen3, &fps_label_screen3);
 
       lv_scr_load(screen1);
-
+    
       /* Release the mutex */
       bsp_display_unlock();
 
@@ -44,8 +53,23 @@ void lvgl_task(void *pvParameter)
 {
       while (1)
       {
-            lv_timer_handler();
-            lv_tick_inc(5);
-            vTaskDelay(pdMS_TO_TICKS(5));
+          lv_timer_handler();
+          lv_tick_inc(5);
+          vTaskDelay(pdMS_TO_TICKS(5));
+  
+          lv_obj_t *active_screen = lv_scr_act();
+          if (active_screen == screen1)
+          {
+              setup_and_update_fps(screen1, &fps_label_screen1);
+          }
+          else if (active_screen == screen2)
+          {
+              setup_and_update_fps(screen2, &fps_label_screen2);
+          }
+          else if (active_screen == screen3)
+          {
+              setup_and_update_fps(screen3, &fps_label_screen3);
+          }
       }
 }
+
