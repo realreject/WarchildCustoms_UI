@@ -1,7 +1,10 @@
 #WARCHILD CUSTOMS Custom UI
 
 #The goal of this project will be a truck mounted touch screen in an automotive ESP-NOW network.
-#Ideas: running board lamps control via CANBUS signal lamp and doors, CANBUS shift lamp, touch screen control on footwell lighting, CABBUS cargo lamp switch to control utility lamps. 
+
+#Current Operation: Touch screen color picker commanding footwell lamps receiver esp32 over ESP-NOW.
+
+#Future ideas: Running board lamps control via CANBUS signal lamp and doors, CANBUS shift warning lamp, CABBUS cargo lamp switch to control utility lamps. 
 
 # This is a platformio based build of the JC3248W535EN DEMO_LVGL Package
 
