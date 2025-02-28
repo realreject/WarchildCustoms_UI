@@ -2,8 +2,16 @@
 #ifndef EVENT_HANDLER_H
 #define EVENT_HANDLER_H
 
-#include "include.h"
 
+#include <lvgl.h>
+#include <esp_log.h>
+
+
+#include "config.h"
+#include "globals.h"
+#include "utils.h"
+
+extern lv_timer_t *needle_timer;
 
 // Declare event handler functions
 void power_btn_event_handler(lv_event_t *e);
@@ -12,10 +20,6 @@ void color_wheel_event_cb(lv_event_t *e);
 void go_to_screen1(lv_event_t *e);
 void go_to_screen2(lv_event_t *e);
 void go_to_screen3(lv_event_t *e);
-void update_meter_value(int32_t kmh_value);
-void demo_update_meter(lv_timer_t *timer);
-void update_rpm_value(int32_t rpm_value);
-void demo_update_rpm(lv_timer_t *timer);
 void send_esp_data();
 
 // Declare timestamp variables for debounce

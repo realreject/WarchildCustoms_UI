@@ -1,7 +1,11 @@
 #ifndef ESP_NOW_MANAGER_H
 #define ESP_NOW_MANAGER_H
 
-#include "include.h"  // Include the central header file for consistency
+#include <lvgl.h>
+#include <esp_log.h>  
+#include "esp_wifi.h"
+#include "esp_now.h"
+#include "config.h"
 
 #define MAC_ADDR_LEN 6  // Define a constant for MAC address length
 

@@ -1,5 +1,5 @@
-#include "include.h"
-#include "globals.h"
+#include "screen1.h"
+
 
 #define TITLE_FONT_SIZE &lv_font_montserrat_28
 #define ICON_FONT_SIZE &lv_font_montserrat_48

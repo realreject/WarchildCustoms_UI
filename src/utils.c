@@ -1,4 +1,4 @@
-#include "include.h"
+#include "utils.h"
 
 // defines
 #define STORAGE_NAMESPACE "storage"
@@ -9,7 +9,7 @@ static const char *TAG = "utils";
 // Debounce function
 bool debounce(uint64_t *last_press, uint32_t delay_ms);
 
-static lv_obj_t *fps_label; // FPS label
+//static lv_obj_t *fps_label; // FPS label
 static uint32_t prev_time = 0; // Previous time for FPS calculation
 static uint32_t frame_count = 0; // Frame counter
 

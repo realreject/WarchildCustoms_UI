@@ -1,7 +1,12 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include "include.h"
+#include "esp_timer.h" 
+#include <nvs_flash.h>
+#include <nvs.h>
+#include "esp_now_manager.h"
+#include "screen3.h"
+
 
 bool debounce(uint64_t *last_press, uint32_t delay_ms);
 void nvs_init();

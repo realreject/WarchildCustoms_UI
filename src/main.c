@@ -1,8 +1,13 @@
-#include "include.h"
-#include "globals.h"
+#include <lvgl.h>
+#include <esp_log.h> 
+#include "utils.h"
+#include "system_init.h"
+#include "screen1.h"
+#include "screen2.h" 
+
 
 // ESP error logging tag
-// static const char *TAG = "main.c";
+static const char *TAG = "main.c";
 
 lv_obj_t *fps_label_screen1 = NULL;
 lv_obj_t *fps_label_screen2 = NULL;
@@ -32,9 +37,13 @@ void app_main()
       // Initialize the rest of the system
       initialize_system();
 
+      ESP_LOGI(TAG, "Initialization functions complete");
+
       create_screen1();
       create_screen2();
       create_screen3();  
+
+      ESP_LOGI(TAG, "Screens created");
 
       setup_and_update_fps(screen1, &fps_label_screen1);
       setup_and_update_fps(screen2, &fps_label_screen2);

@@ -1,7 +1,6 @@
 // event_handler.c
 #include "event_handler.h"
-#include "include.h"
-#include "globals.h"
+
 
 // ESP error logging tag
 static const char *TAG = "event_handler";
@@ -165,127 +164,21 @@ void go_to_screen2(lv_event_t *e)
 void go_to_screen3(lv_event_t *e)
 {
       if (debounce(&last_press_meter, DEBOUNCE_DELAY_MS))
-      {
-            lv_scr_load(screen3); // Load the previously created screen3
+    {
+        lv_scr_load(screen3); // Load the previously created screen3
 
-            static lv_timer_t *meter_timer = NULL;
-            static lv_timer_t *rpm_timer = NULL;
-            static lv_obj_t *demo_mode_label = NULL;
+      // Uncomment one of the following lines for calibration purposes:
+        
+        // Set the needle to the start point for calibration
+        //set_needle_to_start();
+        
+        // Set the needle to the stop point for calibration
+        // set_needle_to_stop();
 
-            // Demo Mode
-            if (meter_timer == NULL)
-            {
-                  meter_timer = lv_timer_create(demo_update_meter, 50, NULL); // 50 ms interval
-            }
-            if (rpm_timer == NULL)
-            {
-                  rpm_timer = lv_timer_create(demo_update_rpm, 200, rpm_label); // 200 ms interval
-            }
-
-            // Create and position DEMO MODE label if not already created
-            if (demo_mode_label == NULL)
-            {
-                  demo_mode_label = lv_label_create(screen3);
-                  lv_label_set_text(demo_mode_label, "DEMO MODE");
-                  lv_obj_set_style_text_color(demo_mode_label, lv_palette_main(LV_PALETTE_RED), 0);
-                  lv_obj_set_style_text_font(demo_mode_label, &lv_font_montserrat_28, 0); // Use the custom bold font
-                  lv_obj_align(demo_mode_label, LV_ALIGN_CENTER, 0, -20);                     // Position at the top center with a y-offset of 10
-            }
-
-            // Live Data Mode (comment out the above lines and uncomment the lines below)
-            /*
-            int32_t real_kmh_value = get_real_kmh_value(); // Function to get real speed value
-            int32_t real_rpm_value = get_real_rpm_value(); // Function to get real RPM value
-
-            // Update the meter and RPM label with real data
-            update_meter_value(real_kmh_value);
-            update_rpm_value(real_rpm_value);
-            */
-      }
-}
-
-// Function to update the meter needle based on input data
-void update_meter_value(int32_t kmh_value)
-{
-      if (needle_indicator == NULL || meter == NULL)
-            return;
-
-      // Cap the speed value at 200
-      if (kmh_value > 200)
-            kmh_value = 200;
-
-      // Update needle position
-      lv_meter_set_indicator_end_value(meter, needle_indicator, kmh_value);
-}
-
-// Timer callback for demo purposes (cycles between 0 and 180)
-void demo_update_meter(lv_timer_t *timer)
-{
-      static int32_t kmh = 0;
-      static bool increasing = true;
-
-      // Update the meter using the function for demo purposes
-      update_meter_value(kmh);
-
-      // Cycle the needle between 0 and 180
-      if (increasing)
-      {
-            kmh += 5;
-            if (kmh >= 200)
-                  increasing = false;
-      }
-      else
-      {
-            kmh -= 5;
-            if (kmh <= 0)
-                  increasing = true;
-      }
-}
-
-// Function to update the RPM label based on input data
-void update_rpm_value(int32_t rpm_value)
-{
-      // Define colors
-      lv_color_t dark_blue = lv_color_make(10, 10, 44);
-
-      if (rpm_label == NULL)
-            return;
-
-      // Cap the RPM value at 3200
-      if (rpm_value > 3200)
-            rpm_value = 3200;
-
-      // Update the digital RPM display
-      char rpm_text[16];
-      snprintf(rpm_text, sizeof(rpm_text), "%ld RPM", rpm_value); // Use %ld for int32_t
-      lv_label_set_text(rpm_label, rpm_text);
-
-      // Ensure the RPM label color remains dark blue
-      lv_obj_set_style_text_color(rpm_label, dark_blue, 0);
-}
-
-// Timer callback for demo purposes (cycles RPM)
-void demo_update_rpm(lv_timer_t *timer)
-{
-      static int32_t rpm = 0;
-      static bool increasing = true;
-
-      // Update the RPM using the function for demo purposes
-      update_rpm_value(rpm);
-
-      // Cycle the RPM between 0 and 3200
-      if (increasing)
-      {
-            rpm += 200;
-            if (rpm >= 3200)
-                  increasing = false;
-      }
-      else
-      {
-            rpm -= 200;
-            if (rpm <= 0)
-                  increasing = true;
-      }
+        // Start the timer to loop through the needle images
+        needle_timer = lv_timer_create(loop_needle, 2, NULL); // Update every 10ms for faster animation
+        
+    }
 }
 
 void send_esp_data()

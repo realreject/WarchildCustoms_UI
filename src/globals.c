@@ -3,6 +3,7 @@
 
 lv_obj_t *screen1, *screen2, *screen3;
 lv_obj_t *color_wheel, *brightness_slider, *power_btn, *meter;
+lv_obj_t *bg_img1, *bg_img2, *gauge_bg;
 
 lv_color_t selected_color;
 
@@ -14,5 +15,5 @@ int glow_brightness = 20; // Default brightness value
 bool power_status = false;
 lv_color_t selected_color;
 
-lv_obj_t *meter, *rpm_label;
-lv_meter_indicator_t *needle_indicator;
+
+
