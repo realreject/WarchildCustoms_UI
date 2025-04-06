@@ -1,22 +1,22 @@
 #include "common_ui.h"
 #include "globals.h"
-#include "screen4.h"
+#include "bg_sel_screen.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 
 // ESP error logging tag
-static const char *TAG = "screen4";
+static const char *TAG = "bg_sel_screen.c";
 
-void create_screen4()
+void create_bg_sel_screen()
 {
-    screen4 = lv_obj_create(NULL);                      // Create a new screen object
-    create_background(screen4);                         // Create the background using the common function
-    create_title(screen4, "SELECTABLE IMAGE", 0, -135); // Create the title using the common function
-    create_home_button(screen4);
+    bg_sel_screen = lv_obj_create(NULL);                      // Create a new screen object
+    create_background(bg_sel_screen);                         // Create the background using the common function
+    create_title(bg_sel_screen, "BACKGROUND IMAGE", 0, -135); // Create the title using the common function
+    create_home_button(bg_sel_screen);
 
     // Create a window for displaying the image
-    image_window = lv_obj_create(screen4);
+    image_window = lv_obj_create(bg_sel_screen);
     lv_obj_set_size(image_window, 260, 160);            // Set the window size
     lv_obj_align(image_window, LV_ALIGN_CENTER, 0, 40); // Position below the dropdown
     lv_obj_set_style_border_color(image_window, lv_palette_main(LV_PALETTE_BLUE), 0);
@@ -27,7 +27,7 @@ void create_screen4()
     lv_obj_clear_flag(image_window, LV_OBJ_FLAG_SCROLLABLE);
 
     // Create the dropdown menu
-    lv_obj_t *dropdown = lv_dropdown_create(screen4);
+    lv_obj_t *dropdown = lv_dropdown_create(bg_sel_screen);
     lv_obj_set_width(dropdown, 180);                 // Set dropdown width
     lv_obj_align(dropdown, LV_ALIGN_CENTER, 0, -80); // Align the dropdown
 

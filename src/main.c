@@ -4,10 +4,10 @@
 #include "globals.h"
 #include "utils.h"
 #include "system_init.h"
-#include "screen1.h"
-#include "screen2.h"
-#include "screen3.h"
-#include "screen4.h"
+#include "home_screen.h"
+#include "led_controls_screen.h"
+#include "meter_screen.h"
+#include "bg_sel_screen.h"
 
 // ESP error logging tag
 static const char *TAG = "main.c";
@@ -42,14 +42,15 @@ void app_main()
 
     ESP_LOGI(TAG, "Initialization functions complete");
 
-    create_screen1();
-    create_screen2();
-    create_screen3();
-    create_screen4();
+    // Create the LVGL screens
+    create_home_screen();
+    create_led_controls_screen();
+    create_meter_screen();
+    create_bg_sel_screen();
 
     ESP_LOGI(TAG, "Screens created");
 
-    lv_scr_load(screen1);
+    lv_scr_load(home_screen);
 
     /* Release the mutex */
     bsp_display_unlock();

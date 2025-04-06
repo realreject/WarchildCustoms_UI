@@ -17,7 +17,7 @@ void create_home_button(lv_obj_t *parent)
 
     // Make the icon interactive
     lv_obj_add_flag(home_icon, LV_OBJ_FLAG_CLICKABLE);
-    lv_obj_add_event_cb(home_icon, go_to_screen1, LV_EVENT_CLICKED, NULL); // Add event callback
+    lv_obj_add_event_cb(home_icon, go_to_home_screen, LV_EVENT_CLICKED, NULL); // Add event callback
 
     // Add styles to the icon
     lv_obj_set_style_text_color(home_icon, lv_color_white(), 0); // Set text color
@@ -38,24 +38,3 @@ void create_background(lv_obj_t *parent) {
     
 } 
 
-/* void create_title(lv_obj_t *parent, const char *title_text, lv_coord_t x_offset, lv_coord_t y_offset)
-{
-    // Iterate over children to find an existing label (if necessary)
-    lv_obj_t *child = lv_obj_get_child(parent, NULL);
-    while (child)
-    {
-        if (lv_obj_check_type(child, &lv_label_class)) // Check if the child is a label
-        {
-            lv_obj_del(child); // Delete existing title label
-            ESP_LOGI("create_title", "Removed existing title label.");
-            break;
-        }
-        child = lv_obj_get_child(parent, child);
-    }
-
-    // Create the title label
-    lv_obj_t *title = lv_label_create(parent);
-    lv_label_set_text(title, title_text);                // Set the title text
-    lv_obj_align(title, LV_ALIGN_TOP_MID, x_offset, y_offset); // Align the title
-    ESP_LOGI("create_title", "Title created: %s", title_text);
-} */

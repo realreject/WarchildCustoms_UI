@@ -8,9 +8,6 @@ static const char *TAG = "event_handler";
 #define POWER_BTN_DEBOUNCE_DELAY_MS 200
 #define WORK_AREA_SIZE 4096 // Size of the work area for JPEG decoder
 
-// for sd jpeg decode
-#define JPEG_IMAGE_RGB565_SIZE (320 * 240 * 2) // Adjust dimensions as necessary
-
 // Define timestamp variables for debounce
 uint64_t last_press_home = 0;
 uint64_t last_press_bulb = 0;
@@ -149,19 +146,19 @@ void color_wheel_event_cb(lv_event_t *e)
       }
 }
 
-void go_to_screen1(lv_event_t *e)
+void go_to_home_screen(lv_event_t *e)
 {
       if (debounce(&last_press_bulb, DEBOUNCE_DELAY_MS))
       {
-            lv_scr_load(screen1); // Load the previously created screen1
+            lv_scr_load(home_screen); // Load the previously created screen1
       }
 }
 
-void go_to_screen2(lv_event_t *e)
+void go_to_led_controls_screen(lv_event_t *e)
 {
       if (debounce(&last_press_home, DEBOUNCE_DELAY_MS))
       {
-            lv_scr_load(screen2); // Load the previously created screen2
+            lv_scr_load(led_controls_screen); // Load the previously created screen2
       }
 }
 
@@ -171,11 +168,11 @@ void anim_img_angle_cb(void *var, int32_t value)
       lv_img_set_angle((lv_obj_t *)var, (int16_t)value);
 }
 
-void go_to_screen3(lv_event_t *e)
+void go_to_meter_screen(lv_event_t *e)
 {
       if (debounce(&last_press_meter, DEBOUNCE_DELAY_MS))
       {
-            lv_scr_load(screen3); // Load the previously created screen3
+            lv_scr_load(meter_screen); // Load the previously created screen3
 
             // Uncomment one of the following lines for calibration purposes:
             // Set the needle to the start point for calibration
@@ -199,11 +196,11 @@ void go_to_screen3(lv_event_t *e)
       }
 }
 
-void go_to_screen4(lv_event_t *e)
+void go_to_bg_sel_screen(lv_event_t *e)
 {
       if (debounce(&last_press_home, DEBOUNCE_DELAY_MS))
       {
-            lv_scr_load(screen4); // Load the previously created screen4
+            lv_scr_load(bg_sel_screen); // Load the previously created screen4
       }
 }
 
@@ -240,108 +237,3 @@ void send_esp_data()
       }
 }
 
-
-
-#include <stdio.h>
-#include <stdlib.h>
-//#include "esp_jpeg.h"
-#include "esp_log.h"
-#include "lvgl.h"
-
-//#define TAG "JPEG_SD"
-
-#define LV_HOR_RES_MAX 240
-#define LV_VER_RES_MAX 320
-
-// Function to decode and display JPEG from SD card using LVGL
-void read_and_display_images(lv_event_t *event)
-{
-  /*   static const char *image_path = "/sdcard/test.jpg"; // Path to the image file
-
-    ESP_LOGI(TAG, "Starting read_and_display_images function.");
-
-    // Open the JPEG file
-    FILE *file = fopen(image_path, "rb");
-    if (!file) {
-        ESP_LOGE(TAG, "Failed to open image file: %s", image_path);
-        return;
-    }
-
-    // Get file size
-    fseek(file, 0, SEEK_END);
-    size_t file_size = ftell(file);
-    rewind(file);
-
-    ESP_LOGI(TAG, "JPEG file size: %zu bytes", file_size);
-
-    // Allocate memory for the JPEG file data
-    uint8_t *jpeg_data = malloc(file_size);
-    if (!jpeg_data) {
-        ESP_LOGE(TAG, "Failed to allocate memory for JPEG data.");
-        fclose(file);
-        return;
-    }
-
-    // Read the JPEG file into memory
-    fread(jpeg_data, 1, file_size, file);
-    fclose(file);
-
-    // Allocate memory for the decoded image (RGB565 format)
-    uint16_t *pixels = calloc(LV_HOR_RES_MAX * LV_VER_RES_MAX, sizeof(uint16_t)); // Adjust for display resolution
-    if (!pixels) {
-        ESP_LOGE(TAG, "Failed to allocate memory for pixel buffer.");
-        free(jpeg_data);
-        return;
-    }
-
-    // Set up JPEG decode configuration
-    esp_jpeg_image_cfg_t jpeg_cfg = {
-        .indata = jpeg_data,
-        .indata_size = file_size,
-        .outbuf = (uint8_t *)pixels,
-        .outbuf_size = LV_HOR_RES_MAX * LV_VER_RES_MAX * sizeof(uint16_t),
-        .out_format = JPEG_IMAGE_FORMAT_RGB565,
-        .out_scale = JPEG_IMAGE_SCALE_0, // No scaling
-        .flags = {.swap_color_bytes = 1}
-    };
-
-    esp_jpeg_image_output_t outimg;
-
-    // Decode the JPEG file
-    esp_err_t ret = esp_jpeg_decode(&jpeg_cfg, &outimg);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to decode JPEG image.");
-        free(jpeg_data);
-        free(pixels);
-        return;
-    }
-
-    ESP_LOGI(TAG, "JPEG image decoded successfully: %dx%d pixels.", outimg.width, outimg.height);
-
-    // Create an LVGL image descriptor for the decoded image
-    static lv_img_dsc_t img_dsc;
-    img_dsc.header.always_zero = 0;
-    img_dsc.header.w = outimg.width;
-    img_dsc.header.h = outimg.height;
-    img_dsc.header.cf = LV_IMG_CF_TRUE_COLOR;
-    img_dsc.data = (const uint8_t *)pixels;
-    img_dsc.data_size = outimg.width * outimg.height * sizeof(uint16_t);
-
-    // Create an LVGL image object to display the image
-    lv_obj_t *img = lv_img_create(lv_scr_act()); // Add image to the active screen
-    if (!img) {
-        ESP_LOGE(TAG, "Failed to create LVGL image object.");
-        free(jpeg_data);
-        free(pixels);
-        return;
-    }
-
-    lv_img_set_src(img, &img_dsc); // Set the image source for the LVGL object
-    lv_obj_center(img);           // Center the image on the screen
-
-    ESP_LOGI(TAG, "Image displayed successfully on LVGL.");
-
-    // Clean up
-    free(jpeg_data); // Free JPEG data
-    // Do not free `pixels`, as LVGL uses it for rendering */
-}

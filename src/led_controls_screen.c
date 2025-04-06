@@ -1,18 +1,21 @@
-#include "screen2.h"
+#include "led_controls_screen.h"
 
 #define ICON_FONT_SIZE &lv_font_montserrat_48
 
-void create_screen2()
-{
-    screen2 = lv_obj_create(NULL);
-    create_background(screen2);     
-    create_title(screen2, "FOOTWELL LAMPS", 0, -135); // Create the title using the common function
-    create_home_button(screen2);
+// ESP error logging tag
+static const char *TAG = "led_controls_screen.c";
 
-    create_color_wheel(screen2);
+void create_led_controls_screen()
+{
+    led_controls_screen = lv_obj_create(NULL);
+    create_background(led_controls_screen);     
+    create_title(led_controls_screen, "FOOTWELL LAMPS", 0, -135); // Create the title using the common function
+    create_home_button(led_controls_screen);
+
+    create_color_wheel(led_controls_screen);
     lv_colorwheel_set_rgb(color_wheel, selected_color);
 
-    power_btn = lv_label_create(screen2);
+    power_btn = lv_label_create(led_controls_screen);
     lv_label_set_text(power_btn, LV_SYMBOL_POWER);
     lv_obj_set_style_text_font(power_btn, ICON_FONT_SIZE, 0);
     lv_obj_align(power_btn, LV_ALIGN_CENTER, 0, 0);
@@ -21,7 +24,7 @@ void create_screen2()
     lv_obj_add_event_cb(power_btn, power_btn_event_handler, LV_EVENT_ALL, NULL);
 
     // Debug print to check power status
-    ESP_LOGI("create_screen2", "Power status during screen creation: %d", power_status);
+    ESP_LOGI(TAG, "Power status during screen creation: %d", power_status);
 
     if (power_status)
     {
@@ -34,13 +37,13 @@ void create_screen2()
 
    
     // create a slider bar lelow the color wheel
-    brightness_slider = lv_slider_create(screen2);
+    brightness_slider = lv_slider_create(led_controls_screen);
     lv_obj_set_width(brightness_slider, 200);
     lv_obj_align(brightness_slider, LV_ALIGN_CENTER, 0, 140);
     lv_obj_add_event_cb(brightness_slider, brightness_slider_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
 
     // Debug print to check brightness value during screen creation
-    ESP_LOGI("create_screen2", "Initial brightness value: %d", glow_brightness);
+    ESP_LOGI(TAG, "Initial brightness value: %d", glow_brightness);
 
     // set the initial slider value
     lv_slider_set_range(brightness_slider, 0, 255);

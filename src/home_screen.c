@@ -1,18 +1,18 @@
-#include "screen1.h"
+#include "home_screen.h"
 
 
 #define ICON_FONT_SIZE &lv_font_montserrat_48
 
-void create_screen1()
+void create_home_screen()
 {
-    screen1 = lv_obj_create(NULL);
-    create_background(screen1);
+    home_screen = lv_obj_create(NULL);
+    create_background(home_screen);
 
-    //lv_obj_t *label = lv_label_create(screen1);
-    create_title(screen1, "MEGA CAB UI", 0, -135); // Create the title using the common function/*   
-    create_bulb_button(screen1);
-    create_meter_button(screen1);
-    create_SDcard_button(screen1);
+    //lv_obj_t *label = lv_label_create(home_screen);
+    create_title(home_screen, "MEGA CAB UI", 0, -135); // Create the title using the common function/*   
+    create_bulb_button(home_screen);
+    create_meter_button(home_screen);
+    create_SDcard_button(home_screen);
 }
 
 void create_bulb_button(lv_obj_t *parent)
@@ -29,7 +29,7 @@ void create_bulb_button(lv_obj_t *parent)
       lv_obj_set_style_text_color(bulb_icon, lv_color_white(), 0); // Set text color
 
       //touch call back
-      lv_obj_add_event_cb(bulb_icon, go_to_screen2, LV_EVENT_CLICKED, NULL); // Add event callback
+      lv_obj_add_event_cb(bulb_icon, go_to_led_controls_screen, LV_EVENT_CLICKED, NULL); // Add event callback
 }
 
 void create_meter_button(lv_obj_t *parent)
@@ -46,7 +46,7 @@ void create_meter_button(lv_obj_t *parent)
       lv_obj_set_style_text_color(meter_icon, lv_color_white(), 0); // Set text color
       
       //touch call back
-      lv_obj_add_event_cb(meter_icon, go_to_screen3, LV_EVENT_CLICKED, NULL); // Add event callback
+      lv_obj_add_event_cb(meter_icon, go_to_meter_screen, LV_EVENT_CLICKED, NULL); // Add event callback
 }
 
 void create_SDcard_button(lv_obj_t *parent){
@@ -61,13 +61,7 @@ void create_SDcard_button(lv_obj_t *parent){
       
       // Add styles to the icon
       lv_obj_set_style_text_color(sdcard_icon, lv_color_white(), 0); // Set text color
-      
-      //touch call back
-      lv_obj_add_event_cb(sdcard_icon, read_and_display_images, LV_EVENT_CLICKED, NULL); // Add event callback
-
-      //touch call back
-      //lv_obj_add_event_cb(sdcard_icon, display_static_image_png, LV_EVENT_CLICKED, NULL); // Add event callback
-
+            
        //touch call back
-       lv_obj_add_event_cb(sdcard_icon, go_to_screen4, LV_EVENT_CLICKED, NULL); // Add event callback
+       lv_obj_add_event_cb(sdcard_icon, go_to_bg_sel_screen, LV_EVENT_CLICKED, NULL); // Add event callback
 }

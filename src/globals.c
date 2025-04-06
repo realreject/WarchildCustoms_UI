@@ -1,7 +1,7 @@
 #include "globals.h"
 
 //LVGL objects
-lv_obj_t *screen1, *screen2, *screen3, *screen4;
+lv_obj_t *home_screen, *led_controls_screen, *meter_screen, *bg_sel_screen;
 lv_obj_t *color_wheel, *brightness_slider, *power_btn, *meter;
 
 //Color picker (footwell lighting)
