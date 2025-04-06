@@ -5,15 +5,28 @@
 #include <lvgl.h>
 
 //for screen creation
-extern lv_obj_t *screen1, *screen2, *screen3;
-extern lv_obj_t *color_wheel, *brightness_slider, *power_btn, *meter;
-extern lv_obj_t *bg_img1, *bg_img2, *gauge_bg;       
-
+extern lv_obj_t *screen1, *screen2, *screen3, *screen4;
+extern lv_obj_t *color_wheel, *brightness_slider, *power_btn, *meter;    
 
 //for ESP-NOW
 extern int glow_red, glow_green, glow_blue, glow_power, glow_brightness;
 extern bool power_status;
 extern lv_color_t selected_color;
+
+//for meter
+#define TOTAL_FRAMES 100 // Adjust this value as needed
+#define ANIMATION_DURATION 1000 // Adjust this value as needed
+extern lv_obj_t *pointer_needle;
+//extern lv_timer_t *needle_timer;
+extern int start_angle;
+extern int stop_angle;
+extern int total_sweep;
+
+//custom fonts
+extern lv_style_t db_font_style;
+
+//image window
+extern lv_obj_t *image_window;
 
 
 #endif // GLOBALS_H

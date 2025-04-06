@@ -9,9 +9,6 @@ static const char *TAG = "utils";
 // Debounce function
 bool debounce(uint64_t *last_press, uint32_t delay_ms);
 
-//static lv_obj_t *fps_label; // FPS label
-static uint32_t prev_time = 0; // Previous time for FPS calculation
-static uint32_t frame_count = 0; // Frame counter
 
 bool debounce(uint64_t *last_press, uint32_t delay_ms)
 {
@@ -153,41 +150,12 @@ void save_color_status(lv_color_t color)
       }
 }
 
-void setup_and_update_fps(lv_obj_t *screen, lv_obj_t **fps_label)
+void make_font_styles(void)
 {
-    if (*fps_label == NULL)
-    {
-        // Create the FPS label if it doesn't exist
-        *fps_label = lv_label_create(screen);
-        lv_label_set_text(*fps_label, "FPS: ???");
 
-        // Set text color to white (or any color you prefer)
-        lv_obj_set_style_text_color(*fps_label, lv_color_white(), 0);
-
-        // Position the FPS label in the upper right-hand corner
-        lv_obj_align(*fps_label, LV_ALIGN_TOP_RIGHT, -10, 10);
-
-        // Initialize previous time
-        prev_time = lv_tick_get();
-    }
-
-    // Increment frame count
-    frame_count++;
-
-    // Calculate FPS every second (1000 ms)
-    uint32_t cur_time = lv_tick_get();
-    uint32_t elapsed_time = cur_time - prev_time;
-    if (elapsed_time >= 1000)
-    {
-        uint32_t fps = (frame_count * 1000) / elapsed_time;
-        frame_count = 0; // Reset frame count after calculating FPS
-        prev_time = cur_time; // Reset previous time
-
-        static char fps_text[16];
-        snprintf(fps_text, sizeof(fps_text), "FPS: %lu", fps);
-        lv_label_set_text(*fps_label, fps_text);
-    }
+      lv_style_init(&db_font_style);
+      lv_style_set_text_font(&db_font_style, &diner_font_set);
+      lv_style_set_text_color(&db_font_style, lv_color_white());
 }
-
 
 // Other utility functions...

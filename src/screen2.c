@@ -1,23 +1,15 @@
 #include "screen2.h"
 
-#define TITLE_FONT_SIZE &lv_font_montserrat_28
 #define ICON_FONT_SIZE &lv_font_montserrat_48
 
 void create_screen2()
 {
     screen2 = lv_obj_create(NULL);
-    lv_obj_t *bg_img2 = lv_img_create(screen2);
-    lv_img_set_src(bg_img2, &viking_bg_480_320);
-    lv_obj_align(bg_img2, LV_ALIGN_CENTER, 0, 0);
-
-    lv_obj_t *label2 = lv_label_create(screen2);
-    lv_label_set_text(label2, "FOOTWELL LAMPS");
-    lv_obj_set_style_text_color(label2, lv_color_white(), 0);
-    lv_obj_set_style_text_font(label2, TITLE_FONT_SIZE, 0);
-    lv_obj_align(label2, LV_ALIGN_CENTER, 0, -135);
+    create_background(screen2);     
+    create_title(screen2, "FOOTWELL LAMPS", 0, -135); // Create the title using the common function
+    create_home_button(screen2);
 
     create_color_wheel(screen2);
-
     lv_colorwheel_set_rgb(color_wheel, selected_color);
 
     power_btn = lv_label_create(screen2);
@@ -40,8 +32,7 @@ void create_screen2()
         lv_obj_set_style_text_color(power_btn, lv_color_hex(0x3c3c3c), 0);
     }
 
-    create_home_button(screen2);
-
+   
     // create a slider bar lelow the color wheel
     brightness_slider = lv_slider_create(screen2);
     lv_obj_set_width(brightness_slider, 200);

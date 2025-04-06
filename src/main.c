@@ -1,84 +1,69 @@
 #include <lvgl.h>
-#include <esp_log.h> 
+#include <esp_log.h>
+
+#include "globals.h"
 #include "utils.h"
 #include "system_init.h"
 #include "screen1.h"
-#include "screen2.h" 
-
+#include "screen2.h"
+#include "screen3.h"
+#include "screen4.h"
 
 // ESP error logging tag
 static const char *TAG = "main.c";
 
-lv_obj_t *fps_label_screen1 = NULL;
-lv_obj_t *fps_label_screen2 = NULL;
-lv_obj_t *fps_label_screen3 = NULL;
-
 // Function prototypes
 void lvgl_task(void *pvParameter);
-
 
 // Main function
 void app_main()
 {
-      // Initialize NVS
-      nvs_init();
+    // Set up the SD card w/ NVS initialization
+    esp_err_t ret = setupSDCard();
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to set up SD card");
+    }
 
-      // Load saved power status, color, and brightness
-      power_status = load_power_status();
-      selected_color = load_color_status();
-      glow_brightness = load_brightness();
+    // Load saved power status, color, and brightness
+    power_status = load_power_status();
+    selected_color = load_color_status();
+    glow_brightness = load_brightness();
 
-      // Set glow_power based on the loaded power status
-      glow_power = power_status ? 1 : 0;
+    // Set glow_power based on the loaded power status
+    glow_power = power_status ? 1 : 0;
 
-      // Initialize ESP-NOW
-      init_esp_now();
+    // Initialize ESP-NOW
+    init_esp_now();
 
-      // Initialize the rest of the system
-      initialize_system();
+    // Initialize the rest of the system
+    initialize_system();
+    make_font_styles();
 
-      ESP_LOGI(TAG, "Initialization functions complete");
+    ESP_LOGI(TAG, "Initialization functions complete");
 
-      create_screen1();
-      create_screen2();
-      create_screen3();  
+    create_screen1();
+    create_screen2();
+    create_screen3();
+    create_screen4();
 
-      ESP_LOGI(TAG, "Screens created");
+    ESP_LOGI(TAG, "Screens created");
 
-      setup_and_update_fps(screen1, &fps_label_screen1);
-      setup_and_update_fps(screen2, &fps_label_screen2);
-      setup_and_update_fps(screen3, &fps_label_screen3);
+    lv_scr_load(screen1);
 
-      lv_scr_load(screen1);
-    
-      /* Release the mutex */
-      bsp_display_unlock();
+    /* Release the mutex */
+    bsp_display_unlock();
 
-      // Create LVGL task
-      xTaskCreate(lvgl_task, "lvgl_task", 4096, NULL, 5, NULL);
+    // Create LVGL task
+    xTaskCreate(lvgl_task, "lvgl_task", 4096, NULL, 5, NULL);
 }
 
 void lvgl_task(void *pvParameter)
 {
-      while (1)
-      {
-          lv_timer_handler();
-          lv_tick_inc(5);
-          vTaskDelay(pdMS_TO_TICKS(5));
-  
-          lv_obj_t *active_screen = lv_scr_act();
-          if (active_screen == screen1)
-          {
-              setup_and_update_fps(screen1, &fps_label_screen1);
-          }
-          else if (active_screen == screen2)
-          {
-              setup_and_update_fps(screen2, &fps_label_screen2);
-          }
-          else if (active_screen == screen3)
-          {
-              setup_and_update_fps(screen3, &fps_label_screen3);
-          }
-      }
+    while (1)
+    {
+        lv_timer_handler();
+        lv_tick_inc(5);
+        vTaskDelay(pdMS_TO_TICKS(5));
+    }
 }
-
