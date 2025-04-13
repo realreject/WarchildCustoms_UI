@@ -7,7 +7,7 @@
 static const char *TAG = "utils";
 
 // Debounce function
-bool debounce(uint64_t *last_press, uint32_t delay_ms);
+//bool debounce(uint64_t *last_press, uint32_t delay_ms);
 
 
 bool debounce(uint64_t *last_press, uint32_t delay_ms)
@@ -33,30 +33,38 @@ void nvs_init()
       ESP_ERROR_CHECK(err);
 }
 
-lv_color_t load_color_status()
-{
+lv_color_t load_color_status() {
       nvs_handle_t nvs_handle;
       esp_err_t err = nvs_open(STORAGE_NAMESPACE, NVS_READONLY, &nvs_handle);
-      lv_color_t color = {0};
-      if (err == ESP_OK)
-      {
-            uint8_t red, green, blue;
-            if (nvs_get_u8(nvs_handle, "red", &red) == ESP_OK &&
-                nvs_get_u8(nvs_handle, "green", &green) == ESP_OK &&
-                nvs_get_u8(nvs_handle, "blue", &blue) == ESP_OK)
-            {
+      lv_color_t color = lv_color_make(255, 0, 0); // Default red color
+      uint8_t initialized = 0;
+  
+      if (err == ESP_OK) {
+          // Check if the system has been initialized
+          nvs_get_u8(nvs_handle, "initialized", &initialized);
+          if (initialized == 1) {
+              // Load saved RGB values if initialized
+              uint8_t red, green, blue;
+              if (nvs_get_u8(nvs_handle, "red", &red) == ESP_OK &&
+                  nvs_get_u8(nvs_handle, "green", &green) == ESP_OK &&
+                  nvs_get_u8(nvs_handle, "blue", &blue) == ESP_OK) {
                   color.ch.red = red;
                   color.ch.green_h = green;
                   color.ch.blue = blue;
-            }
-            nvs_close(nvs_handle);
+                  ESP_LOGI(TAG, "Loaded saved color: R=%d, G=%d, B=%d", red, green, blue);
+              } else {
+                  ESP_LOGW(TAG, "Color data missing, using default red");
+              }
+          } else {
+              ESP_LOGI(TAG, "Fresh flash detected, using default color (red)");
+          }
+          nvs_close(nvs_handle);
+      } else {
+          ESP_LOGE(TAG, "Failed to open NVS for reading color, using default red");
       }
-      else
-      {
-            ESP_LOGI(TAG, "Error reading NVS");
-      }
+  
       return color;
-}
+  }
 
 void save_brightness(int brightness)
 {
@@ -132,23 +140,26 @@ bool load_power_status()
       return false; // Default to off if reading fails
 }
 
-void save_color_status(lv_color_t color)
-{
+void save_color_status(lv_color_t color) {
       nvs_handle_t nvs_handle;
-      esp_err_t err = nvs_open(STORAGE_NAMESPACE, NVS_READWRITE, &nvs_handle);
-      if (err == ESP_OK)
-      {
-            nvs_set_u8(nvs_handle, "red", color.ch.red);
-            nvs_set_u8(nvs_handle, "green", color.ch.green_h);
-            nvs_set_u8(nvs_handle, "blue", color.ch.blue);
-            nvs_commit(nvs_handle);
-            nvs_close(nvs_handle);
+      esp_err_t err = nvs_open("storage", NVS_READWRITE, &nvs_handle);
+      if (err == ESP_OK) {
+          // Save RGB values
+          nvs_set_u8(nvs_handle, "red", color.ch.red);
+          nvs_set_u8(nvs_handle, "green", color.ch.green_h);
+          nvs_set_u8(nvs_handle, "blue", color.ch.blue);
+  
+          // Update initialization flag
+          nvs_set_u8(nvs_handle, "initialized", 1); // 1 means initialized
+  
+          nvs_commit(nvs_handle);
+          nvs_close(nvs_handle);
+  
+          ESP_LOGI(TAG, "Saved color: R=%d, G=%d, B=%d", color.ch.red, color.ch.green_h, color.ch.blue);
+      } else {
+          ESP_LOGE(TAG, "Failed to save color to NVS!");
       }
-      else
-      {
-            ESP_LOGI(TAG, "Error opening NVS");
-      }
-}
+  }
 
 void make_font_styles(void)
 {

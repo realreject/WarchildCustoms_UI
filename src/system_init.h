@@ -27,8 +27,9 @@
 #define SD_MMC_CS 10 // Chip select pin
 
 
-void initialize_system();
+void initialize_system(); 
 esp_err_t setupSDCard();
+void preload_nvs_data();
 void listFiles(const char *dirname, int numTabs);
 
 

@@ -8,6 +8,7 @@
 #include "led_controls_screen.h"
 #include "meter_screen.h"
 #include "bg_sel_screen.h"
+#include "set_bg.h"
 
 // ESP error logging tag
 static const char *TAG = "main.c";
@@ -15,15 +16,21 @@ static const char *TAG = "main.c";
 // Function prototypes
 void lvgl_task(void *pvParameter);
 
+
+
 // Main function
 void app_main()
 {
+
     // Set up the SD card w/ NVS initialization
     esp_err_t ret = setupSDCard();
     if (ret != ESP_OK)
     {
         ESP_LOGE(TAG, "Failed to set up SD card");
     }
+
+    // default led colors and status
+    preload_nvs_data();
 
     // Load saved power status, color, and brightness
     power_status = load_power_status();
@@ -42,15 +49,21 @@ void app_main()
 
     ESP_LOGI(TAG, "Initialization functions complete");
 
+    
+    initialize_global_bg(); // TESTING Initialize the global background object
+
     // Create the LVGL screens
     create_home_screen();
     create_led_controls_screen();
-    create_meter_screen();
-    create_bg_sel_screen();
+    create_meter_screen(); //meters does not use the global background image
+    create_bg_sel_screen(); 
+    
+    attach_bg_to_screen(home_screen);
 
     ESP_LOGI(TAG, "Screens created");
 
     lv_scr_load(home_screen);
+  
 
     /* Release the mutex */
     bsp_display_unlock();

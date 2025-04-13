@@ -2,6 +2,9 @@
 #include "lvgl.h"
 #include <stdio.h>
 
+// ESP error logging tag
+static const char *TAG = "system_init.c";
+
 /**
  * @brief LVGL porting example
  * Set the rotation degree:
@@ -68,9 +71,6 @@ void initialize_system()
     bsp_display_unlock();
 }
 
-
-
-
 esp_err_t setupSDCard()
 {
     static const char *TAG = "setup SD Card";
@@ -113,7 +113,6 @@ esp_err_t setupSDCard()
     if (ret != ESP_OK)
     {
         ESP_LOGE(TAG, "Failed to initialize SPI bus: %s", esp_err_to_name(ret));
-        
     }
 
     ret = sdspi_host_init();
@@ -125,8 +124,7 @@ esp_err_t setupSDCard()
     esp_vfs_fat_sdmmc_mount_config_t mount_config = {
         .format_if_mount_failed = false,
         .max_files = 5,
-        .allocation_unit_size = 16 * 1024
-    };
+        .allocation_unit_size = 16 * 1024};
 
     sdmmc_card_t *card;
     ret = esp_vfs_fat_sdspi_mount("/sdcard", &host, &slot_config, &mount_config, &card);
@@ -140,7 +138,7 @@ esp_err_t setupSDCard()
         {
             ESP_LOGE(TAG, "Failed to initialize the card (%s). Make sure SD card lines have pull-up resistors in place.", esp_err_to_name(ret));
         }
-        //return;
+        // return;
     }
 
     ESP_LOGI(TAG, "SD card mounted successfully");
@@ -151,6 +149,55 @@ esp_err_t setupSDCard()
     ESP_LOGI(TAG, "SD card setup complete");
 
     return ESP_OK;
+}
+
+
+void preload_nvs_data()
+{
+    nvs_handle_t nvs_handle;
+    esp_err_t ret = nvs_open("storage", NVS_READWRITE, &nvs_handle);
+    if (ret != ESP_OK)
+    {
+        ESP_LOGE(TAG, "Failed to open NVS handle!");
+        return;
+    }
+
+    uint8_t initialized = 0;
+    ret = nvs_get_u8(nvs_handle, "initialized", &initialized);
+
+    if (ret == ESP_ERR_NVS_NOT_FOUND)
+    {
+        // Flag not found, this is a fresh flash
+        ESP_LOGI(TAG, "Fresh flash detected. Setting default values...");
+
+        // Set default RGB values for fresh flash
+        nvs_set_u8(nvs_handle, "red", 255); // Default red
+        nvs_set_u8(nvs_handle, "green", 0); // Default green
+        nvs_set_u8(nvs_handle, "blue", 0);  // Default blue
+
+        // Set default power_status (off/false/0)
+        nvs_set_u8(nvs_handle, "power_status", 0);
+
+        // Set default brightness (50%)
+        nvs_set_u8(nvs_handle, "brightness", 255 / 2);
+
+
+        // Set initialization flag to indicate first-time setup
+        nvs_set_u8(nvs_handle, "initialized", 1);
+
+        nvs_commit(nvs_handle);
+    }
+    else if (ret == ESP_OK && initialized == 1)
+    {
+        // Flag exists and is already set
+        ESP_LOGI(TAG, "Initialization flag found. Not a fresh flash.");
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Error reading initialization flag: %s", esp_err_to_name(ret));
+    }
+
+    nvs_close(nvs_handle);
 }
 
 void listFiles(const char *dirname, int numTabs)
@@ -190,13 +237,9 @@ void listFiles(const char *dirname, int numTabs)
                 printf(" [JPEG File]");
                 char path[512]; // Increased buffer size
                 snprintf(path, sizeof(path), "%s/%s", dirname, entry->d_name);
-                
             }
         }
         printf("\n");
     }
     closedir(dir);
 }
-
-
-

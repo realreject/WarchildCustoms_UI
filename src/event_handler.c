@@ -110,55 +110,70 @@ void brightness_slider_event_cb(lv_event_t *e)
 // Event callback to handle color changes
 void color_wheel_event_cb(lv_event_t *e)
 {
-      if (debounce(&last_press_color_wheel, DEBOUNCE_DELAY_MS))
-      {
-            lv_obj_t *obj = lv_event_get_target(e);
-            lv_color_t color = lv_colorwheel_get_rgb(obj);
-            selected_color = color;
+    lv_event_code_t event = lv_event_get_code(e);
 
-            // scale the RGB values to 0-255 8-bit range
-            glow_red = (color.ch.red * 255) / 31;
-            glow_green = (color.ch.green_h * 255) / 31;
-            glow_blue = (color.ch.blue * 255) / 31;
+    // Disable long-press functionality
+    if (event == LV_EVENT_LONG_PRESSED)
+    {
+        ESP_LOGI("Color Wheel", "Long-press detected. Ignoring this action.");
+        return; // Exit without taking any action
+    }
 
-            ESP_LOGI("Color Wheel", "Selected color: R=%d, G=%d, B=%d", glow_red, glow_green, glow_blue);
+    // Handle debounce and color changes
+    if (event == LV_EVENT_VALUE_CHANGED && debounce(&last_press_color_wheel, DEBOUNCE_DELAY_MS))
+    {
+        lv_obj_t *obj = lv_event_get_target(e);
+        lv_color_t color = lv_colorwheel_get_rgb(obj);
+        selected_color = color;
 
-            // Update the slider's indicator and knob color
-            lv_obj_set_style_bg_color(brightness_slider, selected_color, LV_PART_INDICATOR);
-            lv_obj_set_style_bg_color(brightness_slider, selected_color, LV_PART_KNOB);
+        // Scale the RGB values to 0-255 8-bit range
+        glow_red = (color.ch.red * 255) / 31;
+        glow_green = (color.ch.green_h * 255) / 31;
+        glow_blue = (color.ch.blue * 255) / 31;
 
-            // Update the power button color if it is "on"
-            if (power_status)
-            {
-                  lv_obj_set_style_text_color(power_btn, selected_color, 0);
-            }
+        ESP_LOGI("Color Wheel", "Selected color: R=%d, G=%d, B=%d", glow_red, glow_green, glow_blue);
 
-            // Call the send_esp_data function to update the LED colors
-            save_color_status(selected_color); //     Save the color status
+        // Update the slider's indicator and knob color
+        lv_obj_set_style_bg_color(brightness_slider, selected_color, LV_PART_INDICATOR);
+        lv_obj_set_style_bg_color(brightness_slider, selected_color, LV_PART_KNOB);
 
-            // Ensure that the LED state is correctly maintained
-            glow_power = power_status ? 1 : 0;
+        // Update the power button color if it is "on"
+        if (power_status)
+        {
+            lv_obj_set_style_text_color(power_btn, selected_color, 0);
+        }
 
-            // Debugging log to verify the LED state
-            ESP_LOGI("Color Wheel", "LED state: power_status=%d, glow_power=%d", power_status, glow_power);
+        // Save the selected color to NVS
+        save_color_status(selected_color);
 
-            send_esp_data();
-      }
+        // Ensure that the LED state is correctly maintained
+        glow_power = power_status ? 1 : 0;
+
+        // Debugging log to verify the LED state
+        ESP_LOGI("Color Wheel", "LED state: power_status=%d, glow_power=%d", power_status, glow_power);
+
+        // Update the LED data
+        send_esp_data();
+    }
 }
 
 void go_to_home_screen(lv_event_t *e)
 {
       if (debounce(&last_press_bulb, DEBOUNCE_DELAY_MS))
       {
+            attach_bg_to_screen(home_screen);
             lv_scr_load(home_screen); // Load the previously created screen1
+            ESP_LOGI(TAG, "Home button pressed, loading home screen");
       }
 }
 
 void go_to_led_controls_screen(lv_event_t *e)
 {
       if (debounce(&last_press_home, DEBOUNCE_DELAY_MS))
-      {
+      {     
+            attach_bg_to_screen(led_controls_screen);
             lv_scr_load(led_controls_screen); // Load the previously created screen2
+            ESP_LOGI(TAG, "LED control button pressed, loading LED control screen");
       }
 }
 
@@ -173,6 +188,7 @@ void go_to_meter_screen(lv_event_t *e)
       if (debounce(&last_press_meter, DEBOUNCE_DELAY_MS))
       {
             lv_scr_load(meter_screen); // Load the previously created screen3
+            ESP_LOGI(TAG, "Meter button pressed, loading Meter screen");
 
             // Uncomment one of the following lines for calibration purposes:
             // Set the needle to the start point for calibration
@@ -200,7 +216,9 @@ void go_to_bg_sel_screen(lv_event_t *e)
 {
       if (debounce(&last_press_home, DEBOUNCE_DELAY_MS))
       {
+            attach_bg_to_screen(bg_sel_screen); // Attach the global background image to the screen
             lv_scr_load(bg_sel_screen); // Load the previously created screen4
+            ESP_LOGI(TAG, "background select button pressed, loading background select screen");
       }
 }
 

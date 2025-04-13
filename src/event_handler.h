@@ -11,6 +11,7 @@
 #include "config.h"
 #include "globals.h"
 #include "utils.h"
+#include "set_bg.h"
 
 //for SD card
 #include "driver/sdspi_host.h"
@@ -33,9 +34,6 @@ void anim_img_angle_cb(void * var, int32_t value);
 void go_to_meter_screen(lv_event_t *e);
 void go_to_bg_sel_screen(lv_event_t *e);
 void send_esp_data();
-
-//SD card testing
-//void read_and_display_images(lv_event_t *event);
 
 
 // Declare timestamp variables for debounce

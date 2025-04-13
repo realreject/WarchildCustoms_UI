@@ -1,17 +1,13 @@
-#include "common_ui.h"
-#include "globals.h"
 #include "bg_sel_screen.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
+
 
 // ESP error logging tag
 static const char *TAG = "bg_sel_screen.c";
 
 void create_bg_sel_screen()
 {
-    bg_sel_screen = lv_obj_create(NULL);                      // Create a new screen object
-    create_background(bg_sel_screen);                         // Create the background using the common function
+    bg_sel_screen = lv_obj_create(NULL); // Create a new screen object    
+    //attach_bg_to_screen(bg_sel_screen); // Attach the global background image to the screen
     create_title(bg_sel_screen, "BACKGROUND IMAGE", 0, -135); // Create the title using the common function
     create_home_button(bg_sel_screen);
 
@@ -28,7 +24,7 @@ void create_bg_sel_screen()
 
     // Create the dropdown menu
     lv_obj_t *dropdown = lv_dropdown_create(bg_sel_screen);
-    lv_obj_set_width(dropdown, 180);                 // Set dropdown width
+    lv_obj_set_width(dropdown, 300);                 // Set dropdown width
     lv_obj_align(dropdown, LV_ALIGN_CENTER, 0, -80); // Align the dropdown
 
     // Populate the dropdown with PNG files from "S:/png/"
@@ -109,7 +105,9 @@ void to_lowercase(char *str)
 }
 
 void dropdown_event_handler(lv_event_t *e)
-{
+{   
+    ESP_LOGI(TAG, "Dropdown event handler triggered.");
+        
     lv_obj_t *dropdown = lv_event_get_target(e);
 
     // Get the selected file name
@@ -125,12 +123,25 @@ void dropdown_event_handler(lv_event_t *e)
 
     ESP_LOGI(TAG, "Selected file path: %s", file_path);
 
+    // Save the selected file path to NVS
+    if (save_background_to_nvs(file_path))
+    {
+        ESP_LOGI(TAG, "File path saved to NVS successfully.");
+    }
+    else
+    {
+        ESP_LOGE(TAG, "Failed to save file path to NVS.");
+    }
+    
     // Display the image in the dedicated window
-    display_png_in_window(image_window, file_path);
+    //display_png_in_window(image_window, file_path); //Set the image in the window
+    update_global_bg(file_path); // Update the global background object  
 }
 
 void display_png_in_window(lv_obj_t *window, const char *file_path)
 {
+    ESP_LOGI(TAG, "Displaying PNG image in window: %s", file_path);
+
     // Delete any previously displayed image, if necessary
     static lv_obj_t *prev_img = NULL;
     if (prev_img != NULL)

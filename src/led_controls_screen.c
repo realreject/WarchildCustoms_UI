@@ -7,8 +7,8 @@ static const char *TAG = "led_controls_screen.c";
 
 void create_led_controls_screen()
 {
-    led_controls_screen = lv_obj_create(NULL);
-    create_background(led_controls_screen);     
+    led_controls_screen = lv_obj_create(NULL);    
+    //attach_bg_to_screen(led_controls_screen); //TESTING  Attach the global background image to the screen
     create_title(led_controls_screen, "FOOTWELL LAMPS", 0, -135); // Create the title using the common function
     create_home_button(led_controls_screen);
 
@@ -35,7 +35,6 @@ void create_led_controls_screen()
         lv_obj_set_style_text_color(power_btn, lv_color_hex(0x3c3c3c), 0);
     }
 
-   
     // create a slider bar lelow the color wheel
     brightness_slider = lv_slider_create(led_controls_screen);
     lv_obj_set_width(brightness_slider, 200);
@@ -52,6 +51,8 @@ void create_led_controls_screen()
     // update the slider's color based on the selected color
     lv_obj_set_style_bg_color(brightness_slider, selected_color, LV_PART_INDICATOR);
     lv_obj_set_style_bg_color(brightness_slider, selected_color, LV_PART_KNOB);
+
+    ESP_LOGI(TAG, "led_control_screen created successfully");
 }
 
 // Function to create the color wheel and handle color changes

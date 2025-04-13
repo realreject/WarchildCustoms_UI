@@ -72,6 +72,7 @@ void wifi_init()
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
+    ESP_LOGI(TAG, "Wi-Fi initialized");
 }
 
 void init_esp_now()
@@ -79,11 +80,10 @@ void init_esp_now()
     ESP_LOGI(TAG, "Initializing ESP-NOW");
 
     // Initialize Wi-Fi
-    wifi_init();
-    ESP_LOGI(TAG, "Wi-Fi initialized");
+    wifi_init();    
 
     ESP_ERROR_CHECK(esp_now_init());
-    ESP_LOGI(TAG, "ESP-NOW initialized");
+    ESP_LOGI(TAG, "ESP-NOW initializion complete");
 
     ESP_ERROR_CHECK(esp_now_register_send_cb(onDataSent));
     ESP_ERROR_CHECK(esp_now_register_recv_cb(onDataRecv));

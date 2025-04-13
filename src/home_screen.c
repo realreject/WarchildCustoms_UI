@@ -1,18 +1,19 @@
 #include "home_screen.h"
 
-
 #define ICON_FONT_SIZE &lv_font_montserrat_48
+
+static const char *TAG = "home_screen.c";
 
 void create_home_screen()
 {
-    home_screen = lv_obj_create(NULL);
-    create_background(home_screen);
-
-    //lv_obj_t *label = lv_label_create(home_screen);
+    home_screen = lv_obj_create(NULL);          
+    //attach_bg_to_screen(home_screen); // Attach the global background image to the screen
     create_title(home_screen, "MEGA CAB UI", 0, -135); // Create the title using the common function/*   
     create_bulb_button(home_screen);
     create_meter_button(home_screen);
     create_SDcard_button(home_screen);
+
+    ESP_LOGI(TAG, "home_screen created successfully");
 }
 
 void create_bulb_button(lv_obj_t *parent)

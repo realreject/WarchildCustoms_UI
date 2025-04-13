@@ -3,9 +3,12 @@
 #define HOME_SCREEN_H
 
 #include "globals.h"
-#include "viking_bg_480_320.h"
 #include "common_ui.h"
 #include "event_handler.h"
+#include "set_bg.h"
+
+//#include "viking_bg_480_320.h"
+
 
 void create_home_screen();
 void create_bulb_button(lv_obj_t *parent);
