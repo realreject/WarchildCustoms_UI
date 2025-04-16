@@ -13,7 +13,7 @@ extern lv_obj_t *color_wheel, *brightness_slider, *power_btn, *meter;
 extern lv_obj_t *global_bg_img;
 
 //style for background
-extern lv_style_t background_style;
+//extern lv_style_t background_style;
 
 //for ESP-NOW
 extern int glow_red, glow_green, glow_blue, glow_power, glow_brightness;

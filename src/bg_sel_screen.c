@@ -7,6 +7,7 @@ static const char *TAG = "bg_sel_screen.c";
 void create_bg_sel_screen()
 {
     bg_sel_screen = lv_obj_create(NULL); // Create a new screen object    
+    initialize_global_bg(bg_sel_screen);
     //attach_bg_to_screen(bg_sel_screen); // Attach the global background image to the screen
     create_title(bg_sel_screen, "BACKGROUND IMAGE", 0, -135); // Create the title using the common function
     create_home_button(bg_sel_screen);
@@ -30,8 +31,12 @@ void create_bg_sel_screen()
     // Populate the dropdown with PNG files from "S:/png/"
     populate_dropdown_with_png_files(dropdown);
 
+    ESP_LOGE(TAG, "finished populating dropdown with PNG files");
+
     // Attach event callback to handle user selection
     lv_obj_add_event_cb(dropdown, dropdown_event_handler, LV_EVENT_VALUE_CHANGED, NULL);
+
+    ESP_LOGE(TAG, "bg_sel_screen created successfully");
 }
 
 void populate_dropdown_with_png_files(lv_obj_t *dropdown)
@@ -134,7 +139,9 @@ void dropdown_event_handler(lv_event_t *e)
     }
     
     // Display the image in the dedicated window
-    //display_png_in_window(image_window, file_path); //Set the image in the window
+    //display_png_in_window(image_window, file_path);
+    
+    
     update_global_bg(file_path); // Update the global background object  
 }
 

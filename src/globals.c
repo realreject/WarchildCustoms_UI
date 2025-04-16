@@ -9,7 +9,7 @@ lv_obj_t *color_wheel, *brightness_slider, *power_btn, *meter;
 lv_obj_t *global_bg_img = NULL;
 
 //style for background
-lv_style_t background_style;
+//lv_style_t background_style;
 
 //Color picker (footwell lighting)
 lv_color_t selected_color;

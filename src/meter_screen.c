@@ -6,7 +6,7 @@
 #include "gauge/needle.h"
 
 // Define the tag for logging
-// const char *TAG = "SCREEN3.C";
+ const char *TAG = "meter_screen.c";
 
 void create_meter_screen()
 {
@@ -25,6 +25,8 @@ void create_meter_screen()
 
     // Calculate total_sweep
     total_sweep = stop_angle - start_angle;
+
+    ESP_LOGE(TAG, "meter_screen created successfully");
 }
 
 
