@@ -20,7 +20,7 @@ void create_home_screen()
 void create_bulb_button(lv_obj_t *parent)
 {
       lv_obj_t *bulb_icon = lv_label_create(parent);            // Create a label for the icon
-      lv_label_set_text(bulb_icon, LV_SYMBOL_EYE_OPEN);         // Set the text to the home symbol
+      lv_label_set_text(bulb_icon, LV_SYMBOL_OK);         // Set the text to the home symbol
       lv_obj_set_style_text_font(bulb_icon, ICON_FONT_SIZE, 0); // Set the font size to match the power icon
       lv_obj_align(bulb_icon, LV_ALIGN_CENTER, -180, -75);      // Center the icon with an offset
 
@@ -37,7 +37,7 @@ void create_bulb_button(lv_obj_t *parent)
 void create_meter_button(lv_obj_t *parent)
 {
       lv_obj_t *meter_icon = lv_label_create(parent);            // Create a label for the icon
-      lv_label_set_text(meter_icon, LV_SYMBOL_VIDEO);         // Set the text to the home symbol
+      lv_label_set_text(meter_icon, LV_SYMBOL_SETTINGS);         // Set the text to the home symbol
       lv_obj_set_style_text_font(meter_icon, ICON_FONT_SIZE, 0); // Set the font size to match the power icon
       lv_obj_align(meter_icon, LV_ALIGN_CENTER, -120, -75);      // Center the icon with an offset
 

@@ -1,8 +1,11 @@
 #ifndef GLOBALS_H
 #define GLOBALS_H
 
-
 #include <lvgl.h>
+
+//for screensaver
+extern int current_brightness_level; // Tracks current brightness
+extern bool screensaver_active; // Flag to indicate if dimming mode is active
 
 //for screen creation
 extern lv_obj_t *home_screen, *led_controls_screen, *meter_screen, *bg_sel_screen;
@@ -12,8 +15,6 @@ extern lv_obj_t *color_wheel, *brightness_slider, *power_btn, *meter;
 //testing global background object
 extern lv_obj_t *global_bg_img;
 
-//style for background
-//extern lv_style_t background_style;
 
 //for ESP-NOW
 extern int glow_red, glow_green, glow_blue, glow_power, glow_brightness;

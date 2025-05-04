@@ -49,6 +49,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+
 /**
  * @brief BSP display configuration structure
  *
@@ -115,6 +117,24 @@ bool bsp_display_lock(uint32_t timeout_ms);
  *
  */
 void bsp_display_unlock(void);
+
+
+ /**
+ * @brief Sets the LCD backlight brightness level
+ *
+ * This function adjusts the screen brightness based on the given percentage value.
+ * Allowed range: 0-100%. The brightness control is handled via PWM.
+ *
+ * @param brightness_percent Desired brightness level (0-100)
+ * @return ESP_OK on success, or an error code if adjustment fails
+ */
+
+// Existing display functions
+lv_disp_t *bsp_display_start_with_config(const bsp_display_cfg_t *cfg);
+
+// Add your brightness function prototype here
+esp_err_t bsp_display_brightness_set(int brightness_percent); 
+
 
 #ifdef __cplusplus
 }

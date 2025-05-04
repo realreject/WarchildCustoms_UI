@@ -4,6 +4,7 @@
 #include "globals.h"
 #include "utils.h"
 #include "system_init.h"
+#include "screensaver.h"
 #include "home_screen.h"
 #include "led_controls_screen.h"
 #include "meter_screen.h"
@@ -46,6 +47,10 @@ void app_main()
     // Initialize the rest of the system
     initialize_system();
     make_font_styles();
+
+    //initialize screensaver
+    screensaver_init();
+    screensaver_reset_timer(); // Start the timer for the screensaver
 
     ESP_LOGI(TAG, "Initialization functions complete");
 
