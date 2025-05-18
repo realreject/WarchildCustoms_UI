@@ -85,6 +85,10 @@ void attach_bg_to_screen(lv_obj_t *screen)
 {
     ESP_LOGE(TAG, "Attaching BG to SCREEN");
 
+    // Ensure screen has a black background before attaching the global_bg_img
+    lv_obj_set_style_bg_color(screen, lv_color_black(), LV_PART_MAIN);
+    lv_obj_set_style_bg_opa(screen, LV_OPA_COVER, LV_PART_MAIN); // Ensure full opacity
+
     if (global_bg_img == NULL)
     {
         ESP_LOGE(TAG, "Global background image is not initialized.");

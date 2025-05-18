@@ -10,9 +10,9 @@ static const char *TAG = "bg_sel_screen.c";
 
 void create_bg_sel_screen()
 {
-    bg_sel_screen = lv_obj_create(NULL); // Create a new screen object    
+    bg_sel_screen = lv_obj_create(NULL); // Create a new screen object 
     initialize_global_bg(bg_sel_screen);
-    create_title(bg_sel_screen, "BACKGROUND IMAGE", 0, -135); // Create the title using the common function
+    create_title(bg_sel_screen, "CUSTOMIZE BACKGROUND IMAGE", 0, -135); // Create the title using the common function
     create_home_button(bg_sel_screen);
 
     // Create a window for displaying the image

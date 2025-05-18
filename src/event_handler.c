@@ -172,7 +172,8 @@ void go_to_led_controls_screen(lv_event_t *e)
       if (debounce(&last_press_home, DEBOUNCE_DELAY_MS))
       {     
             attach_bg_to_screen(led_controls_screen);
-            lv_scr_load(led_controls_screen); // Load the previously created screen2
+            //lv_scr_load(led_controls_screen); // Load the previously created screen2
+            lv_scr_load_anim(led_controls_screen, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, false);
             ESP_LOGI(TAG, "LED control button pressed, loading LED control screen");
       }
 }
@@ -187,7 +188,8 @@ void go_to_meter_screen(lv_event_t *e)
 {
       if (debounce(&last_press_meter, DEBOUNCE_DELAY_MS))
       {
-            lv_scr_load(meter_screen); // Load the previously created screen3
+            //lv_scr_load(meter_screen); // Load the previously created meters_screen  no animation
+            lv_scr_load_anim(meter_screen, LV_SCR_LOAD_ANIM_MOVE_TOP, 300, 0, false);
             ESP_LOGI(TAG, "Meter button pressed, loading Meter screen");
 
             // Uncomment one of the following lines for calibration purposes:
@@ -217,7 +219,8 @@ void go_to_bg_sel_screen(lv_event_t *e)
       if (debounce(&last_press_home, DEBOUNCE_DELAY_MS))
       {
             attach_bg_to_screen(bg_sel_screen); // Attach the global background image to the screen
-            lv_scr_load(bg_sel_screen); // Load the previously created screen4
+            lv_scr_load_anim(bg_sel_screen, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, false);
+            //lv_scr_load(bg_sel_screen); 
             ESP_LOGI(TAG, "background select button pressed, loading background select screen");
       }
 }
