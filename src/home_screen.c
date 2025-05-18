@@ -1,4 +1,7 @@
 #include "home_screen.h"
+#include "common_ui.h"
+#include "event_handler.h"
+#include "set_bg.h"
 
 #define ICON_FONT_SIZE &lv_font_montserrat_48
 

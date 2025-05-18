@@ -1,4 +1,6 @@
 #include "led_controls_screen.h"
+#include "common_ui.h"
+#include "set_bg.h"
 
 #define ICON_FONT_SIZE &lv_font_montserrat_48
 

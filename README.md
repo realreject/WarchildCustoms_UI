@@ -6,6 +6,8 @@
 
 #Future ideas: Running board lamps control via CANBUS signal lamp and doors, CANBUS shift warning lamp, CABBUS cargo lamp switch to control utility lamps. 
 
+#rename config_template.h to config.h and add your own wifi credentials
+
 # This is a platformio based build of the JC3248W535EN DEMO_LVGL Package
 
 ![alt text](docs/IMG_6782.jpg)

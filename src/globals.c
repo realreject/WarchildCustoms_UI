@@ -7,7 +7,6 @@ bool screensaver_active; // Flag to indicate if dimming mode is active
 //LVGL objects
 lv_obj_t *home_screen, *led_controls_screen, *meter_screen, *bg_sel_screen;
 lv_obj_t *color_wheel, *brightness_slider, *power_btn, *meter;
-//lv_obj_t *background = NULL;
 
 //testing global background object
 lv_obj_t *global_bg_img = NULL;

@@ -1,9 +1,6 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-// Standard C includes
-#include "esp_timer.h" 
-#include <nvs_flash.h>
 #include <nvs.h>
 
 //project specific includes

@@ -1,4 +1,7 @@
 #include "set_bg.h"
+#include "event_handler.h"
+#include "viking_bg_480_320.h"
+#include <esp_log.h>
 
 #define STORAGE_NAMESPACE "storage"
 static const char *TAG = "set_bg.c";

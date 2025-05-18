@@ -1,6 +1,25 @@
 #include "system_init.h"
-#include "lvgl.h"
 #include <stdio.h>
+#include <esp_log.h>
+#include <esp_flash.h>
+#include <esp_chip_info.h>
+
+// for SD card
+#include "esp_system.h"
+#include "nvs_flash.h"
+#include "esp_vfs_fat.h"
+#include "sdmmc_cmd.h"
+#include "driver/sdspi_host.h"
+#include "driver/spi_common.h"
+#include "driver/gpio.h"
+#include "esp_log.h"
+#include "dirent.h"
+
+// Define GPIO pins for SD card
+#define SD_MMC_D0 13
+#define SD_MMC_CLK 12
+#define SD_MMC_CMD 11
+#define SD_MMC_CS 10 // Chip select pin
 
 // ESP error logging tag
 static const char *TAG = "system_init.c";
@@ -18,34 +37,41 @@ static const char *TAG = "system_init.c";
 
 void initialize_system()
 {
-    static const char *TAG = "initialize_system";
 
-    esp_chip_info_t chip_info;
-    uint32_t flash_size;
-    esp_chip_info(&chip_info);
-    ESP_LOGI(TAG, "This is %s chip with %d CPU core(s), %s%s%s%s, ",
-             CONFIG_IDF_TARGET,
-             chip_info.cores,
-             (chip_info.features & CHIP_FEATURE_WIFI_BGN) ? "WiFi/" : "",
-             (chip_info.features & CHIP_FEATURE_BT) ? "BT" : "",
-             (chip_info.features & CHIP_FEATURE_BLE) ? "BLE" : "",
-             (chip_info.features & CHIP_FEATURE_IEEE802154) ? ", 802.15.4 (Zigbee/Thread)" : "");
+    /*
+        static const char *TAG = "initialize_system";
 
-    unsigned major_rev = chip_info.revision / 100;
-    unsigned minor_rev = chip_info.revision % 100;
-    ESP_LOGI(TAG, "silicon revision v%d.%d, ", major_rev, minor_rev);
-    if (esp_flash_get_size(NULL, &flash_size) != ESP_OK)
-    {
-        ESP_LOGI(TAG, "Get flash size failed");
-        return;
-    }
+       esp_chip_info_t chip_info;
+        uint32_t flash_size;
+        esp_chip_info(&chip_info);
+        ESP_LOGI(TAG, "This is %s chip with %d CPU core(s), %s%s%s%s, ",
+                 CONFIG_IDF_TARGET,
+                 chip_info.cores,
+                 (chip_info.features & CHIP_FEATURE_WIFI_BGN) ? "WiFi/" : "",
+                 (chip_info.features & CHIP_FEATURE_BT) ? "BT" : "",
+                 (chip_info.features & CHIP_FEATURE_BLE) ? "BLE" : "",
+                 (chip_info.features & CHIP_FEATURE_IEEE802154) ? ", 802.15.4 (Zigbee/Thread)" : "");
 
-    ESP_LOGI(TAG, "%" PRIu32 "MB %s flash", flash_size / (uint32_t)(1024 * 1024),
-             (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
+        unsigned major_rev = chip_info.revision / 100;
+        unsigned minor_rev = chip_info.revision % 100;
+        ESP_LOGI(TAG, "silicon revision v%d.%d, ", major_rev, minor_rev);
+        if (esp_flash_get_size(NULL, &flash_size) != ESP_OK)
+        {
+            ESP_LOGI(TAG, "Get flash size failed");
+            return;
+        }
 
-    ESP_LOGI(TAG, "Minimum free heap size: %" PRIu32 " bytes", esp_get_minimum_free_heap_size());
-    size_t freePsram = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
-    ESP_LOGI(TAG, "Free PSRAM: %d bytes", freePsram);
+        ESP_LOGI(TAG, "%" PRIu32 "MB %s flash", flash_size / (uint32_t)(1024 * 1024),
+                 (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
+
+        ESP_LOGI(TAG, "Minimum free heap size: %" PRIu32 " bytes", esp_get_minimum_free_heap_size());
+        size_t freePsram = heap_caps_get_free_size(MALLOC_CAP_SPIRAM);
+        ESP_LOGI(TAG, "Free PSRAM: %d bytes", freePsram);
+
+    */
+    // Clear the display buffer to avoid residual artifacts
+    lv_disp_t *disp = lv_disp_get_default();
+    lv_disp_clean_dcache(disp);
 
     bsp_display_cfg_t cfg = {
         .lvgl_port_cfg = ESP_LVGL_PORT_INIT_CONFIG(),
@@ -62,10 +88,15 @@ void initialize_system()
     };
 
     bsp_display_start_with_config(&cfg);
-    bsp_display_backlight_on();
 
-    /* Lock the mutex due to the LVGL APIs are not thread-safe */
-    bsp_display_lock(0);
+    // Force a full refresh to make sure the screen is updated correctly
+    lv_refr_now(NULL);
+
+    //create a customer splash screen
+    splash_screen();// Set the display to a black background
+
+    // turn backlight on
+    bsp_display_backlight_on();
 
     // Unlock the LVGL mutex
     bsp_display_unlock();
@@ -138,7 +169,6 @@ esp_err_t setupSDCard()
         {
             ESP_LOGE(TAG, "Failed to initialize the card (%s). Make sure SD card lines have pull-up resistors in place.", esp_err_to_name(ret));
         }
-        // return;
     }
 
     ESP_LOGI(TAG, "SD card mounted successfully");
@@ -150,7 +180,6 @@ esp_err_t setupSDCard()
 
     return ESP_OK;
 }
-
 
 void preload_nvs_data()
 {
@@ -180,7 +209,6 @@ void preload_nvs_data()
 
         // Set default brightness (50%)
         nvs_set_u8(nvs_handle, "brightness", 255 / 2);
-
 
         // Set initialization flag to indicate first-time setup
         nvs_set_u8(nvs_handle, "initialized", 1);
@@ -243,3 +271,37 @@ void listFiles(const char *dirname, int numTabs)
     }
     closedir(dir);
 }
+
+
+
+void splash_screen()
+{
+    // Create a new screen
+    lv_obj_t *splash = lv_obj_create(NULL);
+    lv_obj_set_style_bg_color(splash, lv_color_black(), LV_PART_MAIN);
+    lv_scr_load(splash);
+
+    // Add a company/logo title
+    lv_obj_t *title = lv_label_create(splash);
+    lv_label_set_text(title, "WARCHILD CUSTOMS INC");
+    lv_obj_set_style_text_color(title, lv_color_white(), LV_PART_MAIN);
+    lv_obj_set_style_text_font(title, &lv_font_montserrat_24, LV_PART_MAIN);
+    lv_obj_align(title, LV_ALIGN_CENTER, 0, -40); // Position near the center
+
+    // Create a loading spinner
+    lv_obj_t *spinner = lv_spinner_create(splash, 1000, 60); // Duration and angle
+    lv_obj_set_size(spinner, 40, 40);
+    lv_obj_set_style_arc_width(spinner, 4, LV_PART_INDICATOR);
+    lv_obj_set_style_arc_color(spinner, lv_palette_main(LV_PALETTE_BLUE), LV_PART_INDICATOR);
+    lv_obj_align(spinner, LV_ALIGN_CENTER, 0, 40); // Position below the title
+
+    // Fade-in animation for smooth appearance
+    lv_anim_t anim;
+    lv_anim_init(&anim);
+    lv_anim_set_var(&anim, splash);
+    lv_anim_set_values(&anim, LV_OPA_TRANSP, LV_OPA_COVER);
+    lv_anim_set_time(&anim, 1000);
+    lv_anim_set_exec_cb(&anim, (lv_anim_exec_xcb_t)lv_obj_set_style_opa);    
+    lv_anim_start(&anim);
+}
+

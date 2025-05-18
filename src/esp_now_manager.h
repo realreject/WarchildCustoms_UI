@@ -15,7 +15,7 @@ typedef struct message_struct
 {
       int red;
       int green;
-      int blue;
+      int blue; 
       int power;
       int led_brightness;
 } message_struct;

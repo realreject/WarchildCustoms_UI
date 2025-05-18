@@ -17,11 +17,11 @@ static const char *TAG = "main.c";
 // Function prototypes
 void lvgl_task(void *pvParameter);
 
-
-
 // Main function
 void app_main()
-{   
+{
+    // Initialize of the system
+    initialize_system();  
 
     // Set up the SD card w/ NVS initialization
     esp_err_t ret = setupSDCard();
@@ -42,16 +42,15 @@ void app_main()
     glow_power = power_status ? 1 : 0;
 
     // Initialize ESP-NOW
-    init_esp_now();
+    init_esp_now();   
 
-    // Initialize the rest of the system
-    initialize_system();
-    make_font_styles();
-
-    //initialize screensaver
+    // initialize screensaver
     screensaver_init();
     screensaver_reset_timer(); // Start the timer for the screensaver
 
+    // make custom font styles
+    make_font_styles();
+    
     ESP_LOGI(TAG, "Initialization functions complete");
 
     // Create the LVGL screens
@@ -62,8 +61,6 @@ void app_main()
     create_bg_sel_screen();
 
     ESP_LOGI(TAG, "Screens created");
-
-    //lv_scr_load(home_screen);
 
     /* Release the mutex */
     bsp_display_unlock();

@@ -1,5 +1,9 @@
 #include "bg_sel_screen.h"
-
+#include "set_bg.h"
+#include "common_ui.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
 
 // ESP error logging tag
 static const char *TAG = "bg_sel_screen.c";
@@ -8,7 +12,6 @@ void create_bg_sel_screen()
 {
     bg_sel_screen = lv_obj_create(NULL); // Create a new screen object    
     initialize_global_bg(bg_sel_screen);
-    //attach_bg_to_screen(bg_sel_screen); // Attach the global background image to the screen
     create_title(bg_sel_screen, "BACKGROUND IMAGE", 0, -135); // Create the title using the common function
     create_home_button(bg_sel_screen);
 

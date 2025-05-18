@@ -1,7 +1,7 @@
 #ifndef SCREENSAVER_H
 #define SCREENSAVER_H
 
-#include "esp_timer.h"
+//#include "esp_timer.h"
 
 // Define brightness levels
 #define SCREEN_BRIGHTNESS_MAX 100

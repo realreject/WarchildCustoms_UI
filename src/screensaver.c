@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "esp_bsp.h"
 #include "esp_log.h"
+#include "esp_timer.h"
 
 
 static const char *TAG = "Screensaver";

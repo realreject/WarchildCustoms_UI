@@ -372,7 +372,39 @@ static lv_disp_t *bsp_display_lcd_init(const bsp_display_cfg_t *cfg)
         disp_cfg.vres = hres;
     }
 
-    return lvgl_port_add_disp(&disp_cfg);
+    //return lvgl_port_add_disp(&disp_cfg);
+    //end of original code
+
+
+    // --- Low-Level Black Screen Clear (WARCHILD EDIT)---
+    // Register the display with LVGL
+    lv_disp_t *disp = lvgl_port_add_disp(&disp_cfg);
+
+
+   
+    // Clear the physical LCD panel to a black state before the backlight is enabled.
+    if (panel_handle != NULL) {
+        // Allocate a buffer for one horizontal line (DMA-capable memory)
+        size_t line_size = hres;
+        uint16_t *line_buffer = heap_caps_malloc(line_size * sizeof(uint16_t), MALLOC_CAP_DMA);
+        if (line_buffer) {
+            // Fill the buffer with black (assume 0x0000 represents black)
+            for (size_t i = 0; i < line_size; i++) {
+                line_buffer[i] = 0x0000;
+            }
+            // Write the buffer, one line at a time, across the entire display height
+            for (uint32_t y = 0; y < vres; y++) {
+                esp_lcd_panel_draw_bitmap(panel_handle, 0, y, hres, y + 1, line_buffer);
+            }
+            free(line_buffer);
+        } else {
+            ESP_LOGE(TAG, "Failed to allocate line buffer for clearing the screen");
+        }
+    }
+    
+    return disp;
+    // --- End Low-Level Clear ---
+    
 }
 
 static bool bsp_touch_sync_cb(void *arg)
