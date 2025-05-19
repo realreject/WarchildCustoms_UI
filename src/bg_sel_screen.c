@@ -1,6 +1,7 @@
 #include "bg_sel_screen.h"
 #include "set_bg.h"
 #include "common_ui.h"
+#include "nav_buttons.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -12,8 +13,8 @@ void create_bg_sel_screen()
 {
     bg_sel_screen = lv_obj_create(NULL); // Create a new screen object 
     initialize_global_bg(bg_sel_screen);
-    create_title(bg_sel_screen, "CUSTOMIZE BACKGROUND IMAGE", 0, -135); // Create the title using the common function
-    create_home_button(bg_sel_screen);
+    create_title(bg_sel_screen, "CUSTOMIZE BACKGROUND IMAGE", 0, -135); // Create the title using the common function  
+    create_horiz_nav_buttons(bg_sel_screen); // Create side to side navigation buttons  
 
     // Create a window for displaying the image
     image_window = lv_obj_create(bg_sel_screen);

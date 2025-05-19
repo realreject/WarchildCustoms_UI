@@ -10,6 +10,7 @@
 #include "meter_screen.h"
 #include "bg_sel_screen.h"
 #include "set_bg.h"
+#include "nav_buttons.h"
 
 // ESP error logging tag
 static const char *TAG = "main.c";
@@ -57,9 +58,12 @@ void app_main()
     create_home_screen();
     lv_scr_load(home_screen);
     create_led_controls_screen();
-    create_meter_screen(); // meters does not use the global background image
     create_bg_sel_screen();
-
+    create_meter_screen(); // meters does not use the global background image
+    
+    // Initialize the horizontal screens array for nav menu
+    init_horizontal_screens();
+    
     ESP_LOGI(TAG, "Screens created");
 
     /* Release the mutex */

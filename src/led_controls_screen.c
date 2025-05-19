@@ -1,6 +1,7 @@
 #include "led_controls_screen.h"
 #include "common_ui.h"
 #include "set_bg.h"
+#include "nav_buttons.h"
 
 #define ICON_FONT_SIZE &lv_font_montserrat_48
 
@@ -11,8 +12,8 @@ void create_led_controls_screen()
 {
     led_controls_screen = lv_obj_create(NULL);  
     initialize_global_bg(led_controls_screen);  
-    create_title(led_controls_screen, "FOOTWELL LAMPS", 0, -135); // Create the title using the common function
-    create_home_button(led_controls_screen);
+    create_title(led_controls_screen, "FOOTWELL LAMPS", 0, -135); // Create the title using the common function   
+    create_horiz_nav_buttons(led_controls_screen); // Create side to side navigation buttons
 
     create_color_wheel(led_controls_screen);
     lv_colorwheel_set_rgb(color_wheel, selected_color);

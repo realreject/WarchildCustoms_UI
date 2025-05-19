@@ -32,3 +32,17 @@ void create_title(lv_obj_t *parent, const char *text, uint16_t x, uint16_t y)
     lv_obj_set_style_text_font(label, CUSTOM_FONT, 0);
     lv_obj_align(label, LV_ALIGN_CENTER, x, y); // Use x and y directly
 }
+
+// Press effect function (lowers button slightly)
+void button_press_effect(lv_event_t *e)
+{
+    lv_obj_t *btn = lv_event_get_target(e);
+    lv_obj_set_style_translate_y(btn, 5, LV_PART_MAIN); // Moves down slightly
+}
+
+// Release effect function (restores position)
+void button_release_effect(lv_event_t *e)
+{
+    lv_obj_t *btn = lv_event_get_target(e);
+    lv_obj_set_style_translate_y(btn, 0, LV_PART_MAIN); // Reset position
+}

@@ -1,4 +1,5 @@
 #include "system_init.h"
+#include "set_bg.h"
 #include <stdio.h>
 #include <esp_log.h>
 #include <esp_flash.h>
@@ -93,7 +94,7 @@ void initialize_system()
     lv_refr_now(NULL);
 
     //create a customer splash screen
-    splash_screen();// Set the display to a black background
+    splash_screen();
 
     // turn backlight on
     bsp_display_backlight_on();
@@ -271,8 +272,6 @@ void listFiles(const char *dirname, int numTabs)
     }
     closedir(dir);
 }
-
-
 
 void splash_screen()
 {

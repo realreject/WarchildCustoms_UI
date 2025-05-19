@@ -83,7 +83,7 @@ bool nvs_get_background_file(char *file_path, size_t max_size)
 
 void attach_bg_to_screen(lv_obj_t *screen)
 {
-    ESP_LOGE(TAG, "Attaching BG to SCREEN");
+    ESP_LOGI(TAG, "Attaching BG to SCREEN");
 
     // Ensure screen has a black background before attaching the global_bg_img
     lv_obj_set_style_bg_color(screen, lv_color_black(), LV_PART_MAIN);

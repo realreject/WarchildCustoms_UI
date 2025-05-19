@@ -35,5 +35,4 @@ extern lv_style_t db_font_style;
 //image window
 extern lv_obj_t *image_window;
 
-
 #endif // GLOBALS_H

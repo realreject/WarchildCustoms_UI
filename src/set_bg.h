@@ -12,4 +12,8 @@ bool is_file_valid(const char *file_path);
 bool save_background_to_nvs(const char *file_path);
 bool validate_image_with_decoder(const char *file_path);
 
+
+////////////testing static background creation///////////////////////
+void create_static_background();
+
 #endif // SET_BG_H

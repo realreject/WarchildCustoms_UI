@@ -4,18 +4,15 @@
 // ESP error logging tag
 static const char *TAG = "event_handler";
 
-#define DEBOUNCE_DELAY_MS 50
 #define POWER_BTN_DEBOUNCE_DELAY_MS 200
 #define WORK_AREA_SIZE 4096 // Size of the work area for JPEG decoder
 
 // Define timestamp variables for debounce
 uint64_t last_press_home = 0;
-uint64_t last_press_bulb = 0;
 uint64_t last_press_meter = 0;
 uint64_t last_press_power = 0;
 uint64_t last_press_color_wheel = 0;
 uint64_t last_press_brightness_slider = 0;
-uint64_t last_press_SD = 0;
 
 // Button event handler
 void power_btn_event_handler(lv_event_t *e)
@@ -110,51 +107,51 @@ void brightness_slider_event_cb(lv_event_t *e)
 // Event callback to handle color changes
 void color_wheel_event_cb(lv_event_t *e)
 {
-    lv_event_code_t event = lv_event_get_code(e);
+      lv_event_code_t event = lv_event_get_code(e);
 
-    // Disable long-press functionality
-    if (event == LV_EVENT_LONG_PRESSED)
-    {
-        ESP_LOGI("Color Wheel", "Long-press detected. Ignoring this action.");
-        return; // Exit without taking any action
-    }
+      // Disable long-press functionality
+      if (event == LV_EVENT_LONG_PRESSED)
+      {
+            ESP_LOGI("Color Wheel", "Long-press detected. Ignoring this action.");
+            return; // Exit without taking any action
+      }
 
-    // Handle debounce and color changes
-    if (event == LV_EVENT_VALUE_CHANGED && debounce(&last_press_color_wheel, DEBOUNCE_DELAY_MS))
-    {
-        lv_obj_t *obj = lv_event_get_target(e);
-        lv_color_t color = lv_colorwheel_get_rgb(obj);
-        selected_color = color;
+      // Handle debounce and color changes
+      if (event == LV_EVENT_VALUE_CHANGED && debounce(&last_press_color_wheel, DEBOUNCE_DELAY_MS))
+      {
+            lv_obj_t *obj = lv_event_get_target(e);
+            lv_color_t color = lv_colorwheel_get_rgb(obj);
+            selected_color = color;
 
-        // Scale the RGB values to 0-255 8-bit range
-        glow_red = (color.ch.red * 255) / 31;
-        glow_green = (color.ch.green_h * 255) / 31;
-        glow_blue = (color.ch.blue * 255) / 31;
+            // Scale the RGB values to 0-255 8-bit range
+            glow_red = (color.ch.red * 255) / 31;
+            glow_green = (color.ch.green_h * 255) / 31;
+            glow_blue = (color.ch.blue * 255) / 31;
 
-        ESP_LOGI("Color Wheel", "Selected color: R=%d, G=%d, B=%d", glow_red, glow_green, glow_blue);
+            ESP_LOGI("Color Wheel", "Selected color: R=%d, G=%d, B=%d", glow_red, glow_green, glow_blue);
 
-        // Update the slider's indicator and knob color
-        lv_obj_set_style_bg_color(brightness_slider, selected_color, LV_PART_INDICATOR);
-        lv_obj_set_style_bg_color(brightness_slider, selected_color, LV_PART_KNOB);
+            // Update the slider's indicator and knob color
+            lv_obj_set_style_bg_color(brightness_slider, selected_color, LV_PART_INDICATOR);
+            lv_obj_set_style_bg_color(brightness_slider, selected_color, LV_PART_KNOB);
 
-        // Update the power button color if it is "on"
-        if (power_status)
-        {
-            lv_obj_set_style_text_color(power_btn, selected_color, 0);
-        }
+            // Update the power button color if it is "on"
+            if (power_status)
+            {
+                  lv_obj_set_style_text_color(power_btn, selected_color, 0);
+            }
 
-        // Save the selected color to NVS
-        save_color_status(selected_color);
+            // Save the selected color to NVS
+            save_color_status(selected_color);
 
-        // Ensure that the LED state is correctly maintained
-        glow_power = power_status ? 1 : 0;
+            // Ensure that the LED state is correctly maintained
+            glow_power = power_status ? 1 : 0;
 
-        // Debugging log to verify the LED state
-        ESP_LOGI("Color Wheel", "LED state: power_status=%d, glow_power=%d", power_status, glow_power);
+            // Debugging log to verify the LED state
+            ESP_LOGI("Color Wheel", "LED state: power_status=%d, glow_power=%d", power_status, glow_power);
 
-        // Update the LED data
-        send_esp_data();
-    }
+            // Update the LED data
+            send_esp_data();
+      }
 }
 
 void go_to_home_screen(lv_event_t *e)
@@ -164,17 +161,6 @@ void go_to_home_screen(lv_event_t *e)
             attach_bg_to_screen(home_screen);
             lv_scr_load(home_screen); // Load the previously created screen1
             ESP_LOGI(TAG, "Home button pressed, loading home screen");
-      }
-}
-
-void go_to_led_controls_screen(lv_event_t *e)
-{
-      if (debounce(&last_press_home, DEBOUNCE_DELAY_MS))
-      {     
-            attach_bg_to_screen(led_controls_screen);
-            //lv_scr_load(led_controls_screen); // Load the previously created screen2
-            lv_scr_load_anim(led_controls_screen, LV_SCR_LOAD_ANIM_MOVE_LEFT, 300, 0, false);
-            ESP_LOGI(TAG, "LED control button pressed, loading LED control screen");
       }
 }
 
@@ -188,7 +174,7 @@ void go_to_meter_screen(lv_event_t *e)
 {
       if (debounce(&last_press_meter, DEBOUNCE_DELAY_MS))
       {
-            //lv_scr_load(meter_screen); // Load the previously created meters_screen  no animation
+            // lv_scr_load(meter_screen); // Load the previously created meters_screen  no animation
             lv_scr_load_anim(meter_screen, LV_SCR_LOAD_ANIM_MOVE_TOP, 300, 0, false);
             ESP_LOGI(TAG, "Meter button pressed, loading Meter screen");
 
@@ -214,21 +200,10 @@ void go_to_meter_screen(lv_event_t *e)
       }
 }
 
-void go_to_bg_sel_screen(lv_event_t *e)
-{
-      if (debounce(&last_press_home, DEBOUNCE_DELAY_MS))
-      {
-            attach_bg_to_screen(bg_sel_screen); // Attach the global background image to the screen
-            lv_scr_load_anim(bg_sel_screen, LV_SCR_LOAD_ANIM_MOVE_RIGHT, 300, 0, false);
-            //lv_scr_load(bg_sel_screen); 
-            ESP_LOGI(TAG, "background select button pressed, loading background select screen");
-      }
-}
-
 void send_esp_data()
 {
       // Change TAG to send_esp_data
-       #define TAG "send_esp_data"
+#define TAG "send_esp_data"
 
       // Scale the RGB values based on the brightness level
       float brightness_factor = glow_brightness / 255.0;
@@ -257,4 +232,3 @@ void send_esp_data()
             ESP_LOGI(TAG, "Error sending");
       }
 }
-
