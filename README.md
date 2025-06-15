@@ -6,10 +6,5 @@
 
 #Future ideas: Running board lamps control via CANBUS signal lamp and doors, CANBUS shift warning lamp, CABBUS cargo lamp switch to control utility lamps. 
 
-# This is a platformio based build of the JC3248W535EN DEMO_LVGL Package
-
-![alt text](docs/IMG_6782.jpg)
-
-![alt text](docs/IMG_6781.jpg)
-
+# This is a platformio based build of the JC3248W535EN 
 For this board from https://s.click.aliexpress.com/e/_DFO5uIV
