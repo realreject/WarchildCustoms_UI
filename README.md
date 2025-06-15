@@ -1,6 +1,6 @@
 #WARCHILD CUSTOMS Custom UI
 
-#The goal of this project will be a truck mounted touch screen in an automotive ESP-NOW network.
+#The goal of this project will be a truck mounted touch screen in an automotive ESP-NOW and/or CAN network.
 
 #Current Operation: Touch screen color picker commanding footwell lamps receiver esp32 over ESP-NOW.
 
